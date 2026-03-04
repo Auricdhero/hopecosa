@@ -171,6 +171,7 @@ const handleSignup = async () => {
         id: data.user.id,
         full_name: form.value.fullName,
         email: form.value.email,
+        membership_status: "pending_biodata",
       });
 
       if (profileError && profileError.code !== "23505") {
@@ -178,7 +179,7 @@ const handleSignup = async () => {
         console.error("Profile creation error:", profileError);
       }
 
-      navigateTo("/profile?setup=true");
+      navigateTo("/auth/select-membership");
     }
   } catch (err: any) {
     error.value = err.message || "An error occurred during signup";

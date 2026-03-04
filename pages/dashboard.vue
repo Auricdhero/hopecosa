@@ -30,15 +30,30 @@
         </div>
       </div>
 
-      <div class="card">
+      <div class="card bg-gradient-to-r from-primary-50 to-blue-50">
         <div class="flex items-center justify-between">
           <div>
-            <p class="text-sm text-gray-600">Year Group</p>
-            <p class="text-3xl font-bold text-primary-600">
-              {{ userProfile?.year_group || "N/A" }}
+            <p class="text-sm text-gray-600">Membership</p>
+            <p class="text-xl font-bold text-primary-600">
+              {{ getMembershipLabel(userProfile?.membership_type) }}
+            </p>
+            <p
+              :class="{
+                'text-green-600': userProfile?.membership_status === 'active',
+                'text-yellow-600':
+                  userProfile?.membership_status === 'pending_verification' ||
+                  userProfile?.membership_status === 'verified' ||
+                  userProfile?.membership_status === 'pending_payment',
+                'text-blue-600':
+                  userProfile?.membership_status === 'pending_biodata',
+                'text-gray-600': userProfile?.membership_status === 'inactive',
+              }"
+              class="text-xs font-medium mt-1"
+            >
+              {{ formatMembershipStatus(userProfile?.membership_status) }}
             </p>
           </div>
-          <div class="text-4xl">🎓</div>
+          <div class="text-4xl">🎖️</div>
         </div>
       </div>
     </div>
@@ -131,7 +146,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-  middleware: "auth",
+  middleware: ["auth", "membership"],
 });
 
 const supabase = useSupabaseClient();
@@ -196,5 +211,23 @@ const formatSize = (bytes: number) => {
   const sizes = ["B", "KB", "MB", "GB"];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
+};
+
+const getMembershipLabel = (type: string) => {
+  if (!type) return "N/A";
+  const labels: Record<string, string> = {
+    associate: "Associate",
+    honourary: "Honourary",
+    regular: "Regular",
+  };
+  return labels[type] || type;
+};
+
+const formatMembershipStatus = (status: string) => {
+  if (!status) return "N/A";
+  return status
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 };
 </script>
