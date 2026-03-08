@@ -35,6 +35,19 @@ CREATE TABLE profiles (
   student_id TEXT,
   major TEXT,
   linkedin_url TEXT,
+  membership_type TEXT CHECK (membership_type IN ('associate', 'honourary', 'regular')),
+  membership_status TEXT DEFAULT 'pending_biodata' CHECK (membership_status IN ('pending_biodata', 'pending_verification', 'verified', 'pending_payment', 'active', 'inactive')),
+  membership_details JSONB,
+  membership_selected_at TIMESTAMPTZ,
+  biodata_completed BOOLEAN DEFAULT FALSE,
+  biodata_completed_at TIMESTAMPTZ,
+  verified_at TIMESTAMPTZ,
+  verified_by UUID REFERENCES auth.users(id),
+  payment_status TEXT DEFAULT 'unpaid' CHECK (payment_status IN ('unpaid', 'paid', 'failed', 'refunded')),
+  payment_amount DECIMAL(10, 2),
+  payment_date TIMESTAMPTZ,
+  stripe_customer_id TEXT,
+  stripe_payment_intent_id TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -174,10 +187,38 @@ After running all the SQL commands, verify your setup:
 - **Permission errors**: Verify that Row Level Security policies are properly set up
 - **Upload errors**: Check that the storage bucket exists and has the correct policies
 - **Database errors**: Make sure all tables and indexes were created successfully
+- **File upload issues**: Ensure the storage bucket is public or has proper RLS policies for authenticated users
 
-## Next Steps
+## Membership Form Fields
 
-1. Install dependencies: `npm install`
-2. Run the development server: `npm run dev`
-3. Visit http://localhost:3000
-4. Sign up and start using the app!
+The application collects different information based on membership type. Each membership type has its own specific set of fields:
+
+### Associate Member Fields
+
+- Full Name (as it should appear on ID card)
+- Gender
+- Date of Birth
+- Phone Number
+- Email Address
+- Residential Address
+- City & Country
+- Occupation
+- Organization / Company (optional)
+
+### Regular Member Fields
+
+- Year of Graduation
+- Program / Course Studied
+- Leadership Role - SRC (Optional)
+- Certificate or Transcript (File Upload - **Required**)
+- Consent Checkbox: Agreement to HOPECOSA verifying graduation status with Hope College
+
+### Honourary Member Fields
+
+- Professional Title (Dr., Prof., Hon., etc.)
+- Field of Expertise
+- Current Position
+- Organization / Institution
+- Brief Biography
+- Reason for Honorary Consideration
+- CV Upload (Optional)

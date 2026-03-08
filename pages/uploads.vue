@@ -44,7 +44,7 @@
           <p class="text-lg font-medium text-gray-700 mb-2">
             Click to upload files or drag and drop
           </p>
-          <p class="text-sm text-gray-500">
+          <p class="text-sm text-gray-50_0">
             Any file type supported (Max 50MB per file)
           </p>
         </div>
@@ -175,7 +175,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-  middleware: "auth",
+  middleware: ["auth", "membership"],
 });
 
 const supabase = useSupabaseClient();
@@ -236,7 +236,7 @@ const uploadFiles = async () => {
 
       // Save metadata to database
       const { error: dbError } = await supabase.from("uploads").insert({
-        user_id: user.value.id,
+        id: user.value.id,
         file_name: file.name,
         file_path: fileName,
         file_url: publicUrl,
@@ -273,7 +273,7 @@ const refreshUploads = async () => {
     const { data, error: fetchError } = await supabase
       .from("uploads")
       .select("*")
-      .eq("user_id", user.value.id)
+      .eq("id", user.value.id)
       .order("created_at", { ascending: false });
 
     if (fetchError) throw fetchError;
