@@ -530,7 +530,7 @@
                 class="input-field"
                 placeholder="2026"
                 :min="new Date().getFullYear()"
-                :max="new Date().getFullYear() + 10"
+                :max="new Date().getFullYear() - 1"
               />
             </div>
 
