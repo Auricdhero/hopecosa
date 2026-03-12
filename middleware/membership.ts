@@ -7,13 +7,18 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   }
 
   // Check if user has selected a membership and completed all steps
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select(
       "membership_type, membership_status, biodata_completed, payment_status",
     )
     .eq("id", user.value.id)
-    .single();
+    .maybeSingle();
+
+  if (profileError) {
+    console.error("Error checking membership status:", profileError);
+    return navigateTo("/auth/select-membership");
+  }
 
   if (!profile?.membership_type) {
     // User hasn't selected a membership yet

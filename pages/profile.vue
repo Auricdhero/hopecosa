@@ -515,7 +515,12 @@ onMounted(async () => {
     .from("profiles")
     .select("*")
     .eq("id", user.value.id)
-    .single();
+    .maybeSingle();
+
+  if (fetchError) {
+    console.error("Error fetching profile:", fetchError);
+    error.value = "Failed to load profile";
+  }
 
   if (data) {
     profile.value = {

@@ -1,6 +1,29 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-4xl mx-auto">
+      <!-- Logout Button -->
+      <div class="flex justify-end mb-4">
+        <button
+          @click="handleLogout"
+          class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+        >
+          <svg
+            class="mr-2 h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+            />
+          </svg>
+          Logout
+        </button>
+      </div>
+
       <div class="text-center mb-8">
         <h2 class="text-3xl font-extrabold text-gray-900">
           Select Your Membership Type
@@ -650,11 +673,42 @@ const certificateFileInput = ref<HTMLInputElement | null>(null);
 // Check if user already has a membership selected
 onMounted(async () => {
   if (user.value) {
-    const { data: profile } = await supabase
+    const { data: profile, error: queryError } = await supabase
       .from("profiles")
       .select("membership_type")
       .eq("id", user.value.id)
-      .single();
+      .maybeSingle();
+
+    if (queryError) {
+      console.error("Error checking membership:", queryError);
+      return;
+    }
+
+    // If profile doesn't exist, create it silently
+    if (!profile) {
+      console.log("Profile not found on page load, creating one...");
+      // Create minimal profile, letting database defaults handle status fields
+      const profileData = {
+        id: user.value.id,
+        email: user.value.email || "",
+      };
+      console.log("Inserting minimal profile data:", profileData);
+
+      const { data: insertedData, error: createError } = await supabase
+        .from("profiles")
+        .insert(profileData)
+        .select();
+
+      if (createError) {
+        console.error("Error creating profile on load:", createError);
+        console.error("Error code:", createError.code);
+        console.error("Error message:", createError.message);
+        console.error("Error hint:", createError.hint);
+      } else {
+        console.log("Profile created successfully:", insertedData);
+      }
+      return;
+    }
 
     if (profile?.membership_type) {
       // User already has membership, redirect to dashboard
@@ -674,6 +728,17 @@ const resetSelection = () => {
   formData.value = {};
   uploadedFiles.value = {};
   error.value = "";
+};
+
+const handleLogout = async () => {
+  try {
+    const { error: signOutError } = await supabase.auth.signOut();
+    if (signOutError) throw signOutError;
+    navigateTo("/auth/login");
+  } catch (err: any) {
+    console.error("Logout error:", err);
+    error.value = "Failed to logout. Please try again.";
+  }
 };
 
 const getMembershipTitle = (type: string) => {
@@ -711,6 +776,54 @@ const handleSubmit = async () => {
   try {
     if (!user.value) {
       throw new Error("User not authenticated");
+    }
+
+    console.log("Starting form submission for user:", user.value.id);
+    console.log("Selected membership type:", selectedType.value);
+    console.log("Form data:", formData.value);
+
+    // First, check if profile exists
+    const { data: existingProfile, error: checkError } = await supabase
+      .from("profiles")
+      .select("id")
+      .eq("id", user.value.id)
+      .maybeSingle();
+
+    if (checkError) {
+      console.error("Error checking profile:", checkError);
+      throw new Error(`Failed to check profile: ${checkError.message}`);
+    }
+
+    if (!existingProfile) {
+      console.log(
+        "Profile does not exist, creating one for user:",
+        user.value.id,
+      );
+
+      // Create the profile with minimal data, let database defaults handle status
+      const newProfileData = {
+        id: user.value.id,
+        email: user.value.email || "",
+      };
+      console.log("Creating minimal profile with data:", newProfileData);
+
+      const { data: newProfile, error: createError } = await supabase
+        .from("profiles")
+        .insert(newProfileData)
+        .select()
+        .single();
+
+      if (createError) {
+        console.error("Error creating profile:", createError);
+        console.error("Error code:", createError.code);
+        console.error("Error message:", createError.message);
+        console.error("Error hint:", createError.hint);
+        throw new Error(`Failed to create profile: ${createError.message}`);
+      }
+
+      console.log("Profile created successfully:", newProfile);
+    } else {
+      console.log("Profile exists, proceeding with update");
     }
 
     // Upload files if any
@@ -759,14 +872,27 @@ const handleSubmit = async () => {
     updateData.phone = formData.value.phone;
     updateData.email = formData.value.email;
 
+    console.log("Attempting to update profile with data:", updateData);
+    console.log("User ID:", user.value.id);
+
     // Update the profile with membership information
-    const { error: updateError } = await supabase
+    const { data: updatedData, error: updateError } = await supabase
       .from("profiles")
       .update(updateData)
-      .eq("id", user.value.id);
+      .eq("id", user.value.id)
+      .select();
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      console.error("Update error:", updateError);
+      throw updateError;
+    }
 
+    if (!updatedData || updatedData.length === 0) {
+      console.error("No rows were updated. Profile may not exist.");
+      throw new Error("Failed to update profile. Profile may not exist.");
+    }
+
+    console.log("Profile updated successfully:", updatedData);
     success.value = "Membership selected successfully!";
 
     // Redirect to profile to complete biodata
@@ -774,7 +900,11 @@ const handleSubmit = async () => {
       navigateTo("/profile?biodata=true");
     }, 1500);
   } catch (err: any) {
+    console.error("Form submission error:", err);
     error.value = err.message || "An error occurred while saving membership";
+
+    // Scroll to top to show error message
+    window.scrollTo({ top: 0, behavior: "smooth" });
   } finally {
     loading.value = false;
   }

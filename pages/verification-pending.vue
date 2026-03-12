@@ -265,11 +265,16 @@ onMounted(async () => {
 const fetchProfile = async () => {
   if (!user.value) return;
 
-  const { data } = await supabase
+  const { data, error: profileError } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.value.id)
-    .single();
+    .maybeSingle();
+
+  if (profileError) {
+    console.error("Error fetching profile:", profileError);
+    return;
+  }
 
   profile.value = data;
 

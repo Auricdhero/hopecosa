@@ -167,16 +167,35 @@ const handleSignup = async () => {
 
     if (data.user) {
       // Create profile entry
-      const { error: profileError } = await supabase.from("profiles").insert({
+      console.log("Creating profile for user:", data.user.id);
+
+      // Create profile with minimal data, let database defaults handle status fields
+      const newProfileData = {
         id: data.user.id,
         full_name: form.value.fullName,
         email: form.value.email,
-        membership_status: "pending_biodata",
-      });
+      };
+      console.log("Profile data to insert:", newProfileData);
 
-      if (profileError && profileError.code !== "23505") {
-        // Ignore duplicate key error
+      const { data: profileData, error: profileError } = await supabase
+        .from("profiles")
+        .insert(newProfileData)
+        .select();
+
+      if (profileError) {
         console.error("Profile creation error:", profileError);
+        console.error("Error code:", profileError.code);
+        console.error("Error message:", profileError.message);
+        console.error("Error hint:", profileError.hint);
+        if (profileError.code !== "23505") {
+          // Not a duplicate key error, show it to user
+          error.value = `Failed to create profile: ${profileError.message}`;
+          return;
+        }
+      }
+
+      if (profileData) {
+        console.log("Profile created successfully:", profileData);
       }
 
       navigateTo("/auth/select-membership");
