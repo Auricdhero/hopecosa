@@ -565,7 +565,7 @@ const handleSubmit = async () => {
     if (isBiodata.value) {
       updateData.biodata_completed = true;
       updateData.biodata_completed_at = new Date().toISOString();
-      updateData.membership_status = "pending_verification";
+      updateData.membership_status = "pending";
     }
 
     const { error: updateError } = await supabase
