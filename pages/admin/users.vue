@@ -419,7 +419,7 @@ const honouraryFields: Record<string, string> = {
 };
 
 const filteredUsers = computed(() => {
-  return users.value.filter((u) => {
+  return users.value.filter((u: Record<string, any>) => {
     const matchesSearch =
       !searchQuery.value ||
       (u.full_name || "")

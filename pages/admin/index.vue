@@ -118,6 +118,18 @@
 </template>
 
 <script setup lang="ts">
+interface ProfileRecord {
+  id: string;
+  full_name: string | null;
+  email: string;
+  membership_status: string;
+  membership_type: string;
+  payment_status: string | null;
+  payment_amount: number | null;
+  payment_date: string | null;
+  created_at: string;
+}
+
 definePageMeta({
   layout: "admin",
   middleware: "admin",
@@ -132,8 +144,8 @@ const stats = ref({
   totalPayments: 0,
 });
 
-const recentUsers = ref<any[]>([]);
-const recentPayments = ref<any[]>([]);
+const recentUsers = ref<ProfileRecord[]>([]);
+const recentPayments = ref<ProfileRecord[]>([]);
 
 const formatStatus = (status: string) => {
   if (!status) return "Unknown";
@@ -174,27 +186,33 @@ onMounted(async () => {
     .order("created_at", { ascending: false });
 
   if (profiles) {
-    stats.value.totalMembers = profiles.length;
-    stats.value.pendingVerification = profiles.filter(
-      (p) =>
+    const typedProfiles = profiles as ProfileRecord[];
+    stats.value.totalMembers = typedProfiles.length;
+    stats.value.pendingVerification = typedProfiles.filter(
+      (p: ProfileRecord) =>
         p.membership_status === "pending_verification" ||
         p.membership_status === "pending",
     ).length;
-    stats.value.activeMembers = profiles.filter(
-      (p) => p.membership_status === "active",
+    stats.value.activeMembers = typedProfiles.filter(
+      (p: ProfileRecord) => p.membership_status === "active",
     ).length;
-    stats.value.totalPayments = profiles
-      .filter((p) => p.payment_status === "paid")
-      .reduce((sum, p) => sum + (p.payment_amount || 0), 0);
+    stats.value.totalPayments = typedProfiles
+      .filter((p: ProfileRecord) => p.payment_status === "paid")
+      .reduce(
+        (sum: number, p: ProfileRecord) => sum + (p.payment_amount || 0),
+        0,
+      );
 
-    recentUsers.value = profiles.slice(0, 5);
+    recentUsers.value = typedProfiles.slice(0, 5);
 
-    recentPayments.value = profiles
-      .filter((p) => p.payment_status === "paid" && p.payment_amount)
+    recentPayments.value = typedProfiles
+      .filter(
+        (p: ProfileRecord) => p.payment_status === "paid" && p.payment_amount,
+      )
       .sort(
-        (a, b) =>
-          new Date(b.payment_date).getTime() -
-          new Date(a.payment_date).getTime(),
+        (a: ProfileRecord, b: ProfileRecord) =>
+          new Date(b.payment_date!).getTime() -
+          new Date(a.payment_date!).getTime(),
       )
       .slice(0, 5);
   }

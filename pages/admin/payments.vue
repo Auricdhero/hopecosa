@@ -156,6 +156,18 @@
 </template>
 
 <script setup lang="ts">
+interface PaymentRecord {
+  id: string;
+  full_name: string | null;
+  email: string;
+  membership_type: string;
+  membership_status: string;
+  payment_status: string | null;
+  payment_amount: number | null;
+  payment_date: string | null;
+  stripe_payment_intent_id: string | null;
+}
+
 definePageMeta({
   layout: "admin",
   middleware: "admin",
@@ -163,7 +175,7 @@ definePageMeta({
 
 const supabase = useSupabaseClient();
 
-const payments = ref<any[]>([]);
+const payments = ref<PaymentRecord[]>([]);
 const searchQuery = ref("");
 const paymentFilter = ref("");
 const typeFilter = ref("");
@@ -176,25 +188,30 @@ const membershipFees: Record<string, number> = {
 
 const totalRevenue = computed(() =>
   payments.value
-    .filter((p) => p.payment_status === "paid")
-    .reduce((sum, p) => sum + (p.payment_amount || 0), 0),
+    .filter((p: PaymentRecord) => p.payment_status === "paid")
+    .reduce(
+      (sum: number, p: PaymentRecord) => sum + (p.payment_amount || 0),
+      0,
+    ),
 );
 
 const paidMembers = computed(
-  () => payments.value.filter((p) => p.payment_status === "paid").length,
+  () =>
+    payments.value.filter((p: PaymentRecord) => p.payment_status === "paid")
+      .length,
 );
 
 const pendingPayments = computed(
   () =>
     payments.value.filter(
-      (p) =>
+      (p: PaymentRecord) =>
         (!p.payment_status || p.payment_status === "unpaid") &&
         p.membership_type,
     ).length,
 );
 
 const filteredPayments = computed(() => {
-  return payments.value.filter((p) => {
+  return payments.value.filter((p: PaymentRecord) => {
     const matchesSearch =
       !searchQuery.value ||
       (p.full_name || "")
@@ -242,7 +259,7 @@ onMounted(async () => {
     .order("payment_date", { ascending: false, nullsFirst: false });
 
   if (data) {
-    payments.value = data;
+    payments.value = data as PaymentRecord[];
   }
 });
 </script>
