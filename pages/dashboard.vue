@@ -58,87 +58,73 @@
       </div>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-8">
-      <div class="card">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold">My Uploads</h2>
-          <NuxtLink to="/uploads" class="btn-primary"> Upload Files </NuxtLink>
-        </div>
-
-        <div v-if="uploads.length === 0" class="text-center py-8 text-gray-500">
-          <p>No uploads yet</p>
-          <NuxtLink
-            to="/uploads"
-            class="text-primary-600 hover:underline mt-2 inline-block"
-          >
-            Upload your first file
-          </NuxtLink>
-        </div>
-
-        <div v-else class="space-y-3">
-          <div
-            v-for="upload in uploads.slice(0, 5)"
-            :key="upload.id"
-            class="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
-          >
-            <div class="flex items-center space-x-3">
-              <span class="text-2xl">📄</span>
-              <div>
-                <p class="font-medium text-sm">{{ upload.file_name }}</p>
-                <p class="text-xs text-gray-500">
-                  {{ formatDate(upload.created_at) }}
-                </p>
-              </div>
-            </div>
-            <span class="text-xs text-gray-500">{{
-              formatSize(upload.file_size)
-            }}</span>
-          </div>
-        </div>
+    <div class="card">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl font-semibold">Profile Summary</h2>
+        <NuxtLink
+          to="/profile"
+          class="text-primary-600 hover:underline text-sm"
+        >
+          Edit Profile
+        </NuxtLink>
       </div>
 
-      <div class="card">
-        <div class="flex items-center justify-between mb-4">
-          <h2 class="text-xl font-semibold">Profile Summary</h2>
-          <NuxtLink
-            to="/profile"
-            class="text-primary-600 hover:underline text-sm"
+      <div v-if="userProfile" class="space-y-3">
+        <div class="flex items-center gap-4 pb-2 border-b border-gray-100">
+          <div
+            class="w-16 h-16 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center"
           >
-            Edit Profile
-          </NuxtLink>
+            <img
+              v-if="avatarUrl"
+              :src="avatarUrl"
+              alt="Profile picture"
+              class="w-full h-full object-cover"
+            />
+            <span v-else class="text-xl font-semibold text-gray-500">
+              {{
+                (userProfile.full_name || userProfile.email || "U")
+                  .charAt(0)
+                  .toUpperCase()
+              }}
+            </span>
+          </div>
+          <div>
+            <p class="text-sm text-gray-600">Profile Picture</p>
+            <p class="text-sm text-gray-500">
+              {{ avatarUrl ? "Uploaded" : "Not uploaded" }}
+            </p>
+          </div>
         </div>
 
-        <div v-if="userProfile" class="space-y-3">
-          <div>
-            <p class="text-sm text-gray-600">Name</p>
-            <p class="font-medium">{{ userProfile.full_name || "Not set" }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-600">Email</p>
-            <p class="font-medium">{{ userProfile.email }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-600">Year Group</p>
-            <p class="font-medium">{{ userProfile.year_group || "Not set" }}</p>
-          </div>
-          <div>
-            <p class="text-sm text-gray-600">Major</p>
-            <p class="font-medium">{{ userProfile.major || "Not set" }}</p>
-          </div>
-          <div v-if="userProfile.bio">
-            <p class="text-sm text-gray-600">Bio</p>
-            <p class="text-sm">{{ userProfile.bio }}</p>
-          </div>
+        <div>
+          <p class="text-sm text-gray-600">Name</p>
+          <p class="font-medium">{{ userProfile.full_name || "Not set" }}</p>
         </div>
-        <div v-else class="text-center py-8 text-gray-500">
-          <p>Complete your profile to get started</p>
-          <NuxtLink
-            to="/profile?setup=true"
-            class="text-primary-600 hover:underline mt-2 inline-block"
-          >
-            Set up profile
-          </NuxtLink>
+        <div>
+          <p class="text-sm text-gray-600">Email</p>
+          <p class="font-medium">{{ userProfile.email }}</p>
         </div>
+        <div>
+          <p class="text-sm text-gray-600">Year Group</p>
+          <p class="font-medium">{{ userProfile.year_group || "Not set" }}</p>
+        </div>
+        <div>
+          <p class="text-sm text-gray-600">Major</p>
+          <p class="font-medium">{{ userProfile.major || "Not set" }}</p>
+        </div>
+        <div v-if="userProfile.bio">
+          <p class="text-sm text-gray-600">Bio</p>
+          <p class="text-sm">{{ userProfile.bio }}</p>
+        </div>
+      </div>
+      <div v-else class="text-center py-8 text-gray-500">
+        <p>Complete your profile to get started</p>
+        <NuxtLink
+          to="/profile?setup=true"
+          class="text-primary-600 hover:underline mt-2 inline-block"
+        >
+          Set up profile
+        </NuxtLink>
       </div>
     </div>
   </div>
@@ -152,8 +138,13 @@ definePageMeta({
 const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 
+type StorageFile = {
+  name: string;
+};
+
 const userProfile = ref<any>(null);
 const uploads = ref<any[]>([]);
+const avatarUrl = ref("");
 const stats = ref({
   totalUploads: 0,
   storageUsed: "0 MB",
@@ -181,11 +172,13 @@ onMounted(async () => {
 
   userProfile.value = profileData;
 
+  await loadAvatar();
+
   // Fetch user uploads
   const { data: uploadsData } = await supabase
     .from("uploads")
     .select("*")
-    .eq("user_id", user.value.id)
+    .eq("id", user.value.id)
     .order("created_at", { ascending: false });
 
   uploads.value = uploadsData || [];
@@ -200,13 +193,43 @@ onMounted(async () => {
   stats.value.storageUsed = formatSize(totalBytes);
 });
 
-const formatDate = (dateString: string) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+const loadAvatar = async () => {
+  if (!user.value) return;
+
+  try {
+    const { data: files, error: listError } = await supabase.storage
+      .from("uploads")
+      .list(`${user.value.id}/profile`, { limit: 100 });
+
+    if (listError) throw listError;
+
+    const imageFiles = ((files || []) as StorageFile[]).filter(
+      (file: StorageFile) =>
+        !!file.name && /\.(png|jpe?g|webp|gif)$/i.test(file.name),
+    );
+
+    if (imageFiles.length === 0) {
+      avatarUrl.value = "";
+      return;
+    }
+
+    const latestAvatar = imageFiles
+      .slice()
+      .sort((a: StorageFile, b: StorageFile) => {
+        const tsA = Number(a.name.match(/avatar_(\d+)/)?.[1] || 0);
+        const tsB = Number(b.name.match(/avatar_(\d+)/)?.[1] || 0);
+        return tsB - tsA;
+      })[0];
+
+    const filePath = `${user.value.id}/profile/${latestAvatar.name}`;
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("uploads").getPublicUrl(filePath);
+
+    avatarUrl.value = `${publicUrl}?t=${Date.now()}`;
+  } catch (err) {
+    console.error("Error loading dashboard avatar:", err);
+  }
 };
 
 const formatSize = (bytes: number) => {
