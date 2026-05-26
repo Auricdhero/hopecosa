@@ -438,6 +438,7 @@
 </template>
 
 <script setup lang="ts">
+import { generateHopecosaStudentId } from "~/utils/student-id";
 definePageMeta({
   middleware: ["auth", "membership"],
 });
@@ -468,6 +469,7 @@ const membershipInfo = ref({
 const loading = ref(false);
 const error = ref("");
 const successMessage = ref("");
+const hasStudentId = ref(false);
 
 // Helper functions
 const getMembershipLabel = (type: string) => {
@@ -523,6 +525,7 @@ onMounted(async () => {
   }
 
   if (data) {
+    hasStudentId.value = Boolean(data.student_id);
     profile.value = {
       full_name: data.full_name || "",
       email: data.email || user.value.email || "",
@@ -561,6 +564,11 @@ const handleSubmit = async () => {
       updated_at: new Date().toISOString(),
     };
 
+    const completionYear = profile.value.year_group;
+    if (!hasStudentId.value) {
+      updateData.student_id = generateHopecosaStudentId(completionYear);
+    }
+
     // If completing biodata for the first time, mark as pending verification
     if (isBiodata.value) {
       updateData.biodata_completed = true;
@@ -573,6 +581,10 @@ const handleSubmit = async () => {
       .upsert(updateData);
 
     if (updateError) throw updateError;
+
+    if (updateData.student_id) {
+      hasStudentId.value = true;
+    }
 
     successMessage.value = isBiodata.value
       ? "Biodata submitted successfully! Redirecting to verification status..."

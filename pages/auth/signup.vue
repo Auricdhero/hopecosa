@@ -113,6 +113,7 @@
 </template>
 
 <script setup lang="ts">
+import { generateHopecosaStudentId } from "~/utils/student-id";
 definePageMeta({
   layout: false,
 });
@@ -174,6 +175,7 @@ const handleSignup = async () => {
         id: data.user.id,
         full_name: form.value.fullName,
         email: form.value.email,
+        student_id: generateHopecosaStudentId(),
       };
       console.log("Profile data to insert:", newProfileData);
 

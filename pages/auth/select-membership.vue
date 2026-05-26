@@ -651,6 +651,7 @@
 </template>
 
 <script setup lang="ts">
+import { generateHopecosaStudentId } from "~/utils/student-id";
 definePageMeta({
   layout: false,
   middleware: "auth",
@@ -691,6 +692,7 @@ onMounted(async () => {
       const profileData = {
         id: user.value.id,
         email: user.value.email || "",
+        student_id: generateHopecosaStudentId(),
       };
       console.log("Inserting minimal profile data:", profileData);
 
@@ -804,6 +806,7 @@ const handleSubmit = async () => {
       const newProfileData = {
         id: user.value.id,
         email: user.value.email || "",
+        student_id: generateHopecosaStudentId(formData.value.yearOfGraduation),
       };
       console.log("Creating minimal profile with data:", newProfileData);
 

@@ -15,6 +15,7 @@ ADD COLUMN IF NOT EXISTS membership_type TEXT CHECK (membership_type IN ('associ
 ADD COLUMN IF NOT EXISTS membership_status TEXT DEFAULT 'pending_biodata' CHECK (membership_status IN ('pending_biodata', 'pending_verification', 'verified', 'pending_payment', 'active', 'inactive')),
 ADD COLUMN IF NOT EXISTS membership_details JSONB,
 ADD COLUMN IF NOT EXISTS membership_selected_at TIMESTAMPTZ,
+ADD COLUMN IF NOT EXISTS student_id TEXT,
 ADD COLUMN IF NOT EXISTS biodata_completed BOOLEAN DEFAULT FALSE,
 ADD COLUMN IF NOT EXISTS biodata_completed_at TIMESTAMPTZ,
 ADD COLUMN IF NOT EXISTS verified_at TIMESTAMPTZ,
@@ -30,6 +31,8 @@ ALTER TABLE profiles
 ADD CONSTRAINT fk_verified_by
 FOREIGN KEY (verified_by)
 REFERENCES auth.users(id);
+
+CREATE UNIQUE INDEX IF NOT EXISTS profiles_student_id_idx ON profiles(student_id) WHERE student_id IS NOT NULL;
 ```
 
 ### 2. Start the Application
