@@ -666,6 +666,20 @@ const loading = ref(false);
 const error = ref("");
 const success = ref("");
 
+const generateHopecosaStudentId = (completionYear?: number | string | null) => {
+  const parsedYear = Number(completionYear);
+  const safeYear =
+    Number.isInteger(parsedYear) && parsedYear > 1900
+      ? parsedYear
+      : new Date().getFullYear();
+
+  const randomBuffer = new Uint32Array(1);
+  crypto.getRandomValues(randomBuffer);
+  const randomNumber = randomBuffer[0].toString().padStart(10, "0");
+
+  return `HOPECOSA-${safeYear}-${randomNumber}`;
+};
+
 // File input refs
 const cvFileInput = ref<HTMLInputElement | null>(null);
 const certificateFileInput = ref<HTMLInputElement | null>(null);
@@ -691,6 +705,7 @@ onMounted(async () => {
       const profileData = {
         id: user.value.id,
         email: user.value.email || "",
+        student_id: generateHopecosaStudentId(),
       };
       console.log("Inserting minimal profile data:", profileData);
 
@@ -804,6 +819,7 @@ const handleSubmit = async () => {
       const newProfileData = {
         id: user.value.id,
         email: user.value.email || "",
+        student_id: generateHopecosaStudentId(formData.value.yearOfGraduation),
       };
       console.log("Creating minimal profile with data:", newProfileData);
 

@@ -468,6 +468,21 @@ const membershipInfo = ref({
 const loading = ref(false);
 const error = ref("");
 const successMessage = ref("");
+const hasExistingProfile = ref(false);
+
+const generateHopecosaStudentId = (completionYear?: number | string | null) => {
+  const parsedYear = Number(completionYear);
+  const safeYear =
+    Number.isInteger(parsedYear) && parsedYear > 1900
+      ? parsedYear
+      : new Date().getFullYear();
+
+  const randomBuffer = new Uint32Array(1);
+  crypto.getRandomValues(randomBuffer);
+  const randomNumber = randomBuffer[0].toString().padStart(10, "0");
+
+  return `HOPECOSA-${safeYear}-${randomNumber}`;
+};
 
 // Helper functions
 const getMembershipLabel = (type: string) => {
@@ -523,6 +538,7 @@ onMounted(async () => {
   }
 
   if (data) {
+    hasExistingProfile.value = true;
     profile.value = {
       full_name: data.full_name || "",
       email: data.email || user.value.email || "",
@@ -560,6 +576,10 @@ const handleSubmit = async () => {
       major: profile.value.major,
       updated_at: new Date().toISOString(),
     };
+
+    if (!hasExistingProfile.value) {
+      updateData.student_id = generateHopecosaStudentId(profile.value.year_group);
+    }
 
     // If completing biodata for the first time, mark as pending verification
     if (isBiodata.value) {
