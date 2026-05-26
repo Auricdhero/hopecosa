@@ -98,13 +98,22 @@ describe("resolveMembershipRedirect", () => {
     ).toBe("/verification-pending");
   });
 
-  it("does not bypass pending biodata redirect when biodata query is non-string", () => {
+  it("redirects to profile when biodata query value is not a string", () => {
     expect(
       resolveMembershipRedirect(
         { path: "/dashboard", query: { biodata: ["true"] } },
         { membership_type: "regular", membership_status: "pending_biodata" },
       ),
     ).toBe("/profile?biodata=true");
+  });
+
+  it("allows profile route when biodata query is an array value", () => {
+    expect(
+      resolveMembershipRedirect(
+        { path: "/profile", query: { biodata: ["true"] } },
+        { membership_type: "regular", membership_status: "pending_biodata" },
+      ),
+    ).toBeNull();
   });
 
   it("returns no redirect for unknown status with membership selected", () => {
