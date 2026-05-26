@@ -469,7 +469,6 @@ const membershipInfo = ref({
 const loading = ref(false);
 const error = ref("");
 const successMessage = ref("");
-const hasExistingProfile = ref(false);
 const hasStudentId = ref(false);
 
 // Helper functions
@@ -526,7 +525,6 @@ onMounted(async () => {
   }
 
   if (data) {
-    hasExistingProfile.value = true;
     hasStudentId.value = Boolean(data.student_id);
     profile.value = {
       full_name: data.full_name || "",
@@ -567,7 +565,7 @@ const handleSubmit = async () => {
     };
 
     const completionYear = profile.value.year_group;
-    if (!hasExistingProfile.value || !hasStudentId.value) {
+    if (!hasStudentId.value) {
       updateData.student_id = generateHopecosaStudentId(completionYear);
     }
 
@@ -584,7 +582,6 @@ const handleSubmit = async () => {
 
     if (updateError) throw updateError;
 
-    hasExistingProfile.value = true;
     if (updateData.student_id) {
       hasStudentId.value = true;
     }
