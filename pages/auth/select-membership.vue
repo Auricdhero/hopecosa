@@ -651,6 +651,7 @@
 </template>
 
 <script setup lang="ts">
+import { generateHopecosaStudentId } from "~/utils/student-id";
 definePageMeta({
   layout: false,
   middleware: "auth",
@@ -665,20 +666,6 @@ const uploadedFiles = ref<any>({});
 const loading = ref(false);
 const error = ref("");
 const success = ref("");
-
-const generateHopecosaStudentId = (completionYear?: number | string | null) => {
-  const parsedYear = Number(completionYear);
-  const safeYear =
-    Number.isInteger(parsedYear) && parsedYear > 1900
-      ? parsedYear
-      : new Date().getFullYear();
-
-  const randomBuffer = new Uint32Array(1);
-  crypto.getRandomValues(randomBuffer);
-  const randomNumber = randomBuffer[0].toString().padStart(10, "0");
-
-  return `HOPECOSA-${safeYear}-${randomNumber}`;
-};
 
 // File input refs
 const cvFileInput = ref<HTMLInputElement | null>(null);
