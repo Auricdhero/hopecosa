@@ -566,8 +566,9 @@ const handleSubmit = async () => {
       updated_at: new Date().toISOString(),
     };
 
+    const completionYear = profile.value.year_group;
     if (!hasExistingProfile.value || !hasStudentId.value) {
-      updateData.student_id = generateHopecosaStudentId(profile.value.year_group);
+      updateData.student_id = generateHopecosaStudentId(completionYear);
     }
 
     // If completing biodata for the first time, mark as pending verification
@@ -582,6 +583,11 @@ const handleSubmit = async () => {
       .upsert(updateData);
 
     if (updateError) throw updateError;
+
+    hasExistingProfile.value = true;
+    if (updateData.student_id) {
+      hasStudentId.value = true;
+    }
 
     successMessage.value = isBiodata.value
       ? "Biodata submitted successfully! Redirecting to verification status..."
