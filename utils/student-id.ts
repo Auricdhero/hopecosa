@@ -8,7 +8,7 @@ export const generateHopecosaStudentId = (
 ) => {
   const parsedYear = Number(completionYear);
   const safeYear =
-    Number.isInteger(parsedYear) && parsedYear > MIN_VALID_COMPLETION_YEAR
+    Number.isInteger(parsedYear) && parsedYear >= MIN_VALID_COMPLETION_YEAR
       ? parsedYear
       : new Date().getFullYear();
 
