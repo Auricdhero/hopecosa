@@ -470,6 +470,7 @@ const loading = ref(false);
 const error = ref("");
 const successMessage = ref("");
 const hasExistingProfile = ref(false);
+const hasStudentId = ref(false);
 
 // Helper functions
 const getMembershipLabel = (type: string) => {
@@ -526,6 +527,7 @@ onMounted(async () => {
 
   if (data) {
     hasExistingProfile.value = true;
+    hasStudentId.value = Boolean(data.student_id);
     profile.value = {
       full_name: data.full_name || "",
       email: data.email || user.value.email || "",
@@ -564,7 +566,7 @@ const handleSubmit = async () => {
       updated_at: new Date().toISOString(),
     };
 
-    if (!hasExistingProfile.value) {
+    if (!hasExistingProfile.value || !hasStudentId.value) {
       updateData.student_id = generateHopecosaStudentId(profile.value.year_group);
     }
 

@@ -32,7 +32,7 @@ ADD CONSTRAINT fk_verified_by
 FOREIGN KEY (verified_by)
 REFERENCES auth.users(id);
 
-CREATE UNIQUE INDEX IF NOT EXISTS profiles_student_id_idx ON profiles(student_id);
+CREATE UNIQUE INDEX IF NOT EXISTS profiles_student_id_idx ON profiles(student_id) WHERE student_id IS NOT NULL;
 ```
 
 ### 2. Start the Application
