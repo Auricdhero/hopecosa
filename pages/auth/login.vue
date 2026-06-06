@@ -8,7 +8,7 @@
           Sign in to your account
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
-          Welcome back to the student association
+          Welcome back to HOPECOSA
         </p>
       </div>
 

@@ -8,7 +8,7 @@
           Sign up for an account
         </h2>
         <p class="mt-2 text-center text-sm text-gray-600">
-          Join the student association today
+          Join HOPECOSA today
         </p>
       </div>
 
@@ -86,6 +86,25 @@
               placeholder="John Doe"
             />
           </div>
+
+          <div>
+            <label
+              for="year-group"
+              class="block text-sm font-medium text-gray-700 mb-1"
+              >Year of Completion <span class="text-red-500">*</span></label
+            >
+            <select
+              id="year-group"
+              v-model="form.yearGroup"
+              required
+              class="input-field"
+            >
+              <option :value="null" disabled>Select year...</option>
+              <option v-for="year in yearOptions" :key="year" :value="year">
+                {{ year }}
+              </option>
+            </select>
+          </div>
         </div>
 
         <div>
@@ -120,11 +139,15 @@ definePageMeta({
 const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 
+const currentYear = new Date().getFullYear();
+const yearOptions = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
+
 const form = ref({
   email: "",
   password: "",
   confirmPassword: "",
   fullName: "",
+  yearGroup: null as number | null,
 });
 
 const loading = ref(false);
@@ -174,6 +197,7 @@ const handleSignup = async () => {
         id: data.user.id,
         full_name: form.value.fullName,
         email: form.value.email,
+        year_group: form.value.yearGroup,
       };
       console.log("Profile data to insert:", newProfileData);
 

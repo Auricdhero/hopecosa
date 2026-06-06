@@ -2,7 +2,7 @@
   <div class="p-8">
     <div class="mb-8">
       <h1 class="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-      <p class="mt-2 text-gray-600">Overview of student association activity</p>
+      <p class="mt-2 text-gray-600">Overview of HOPECOSA activity</p>
     </div>
 
     <!-- Stats Cards -->

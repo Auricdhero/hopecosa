@@ -1,6 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-3xl mx-auto">
+      <!-- Header -->
       <div class="text-center mb-8">
         <div
           class="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4"
@@ -77,152 +78,91 @@
           <div>
             <p class="text-sm text-gray-600 mb-1">Membership Dues</p>
             <p class="text-4xl font-bold text-gray-900">
-              ${{ membershipFees[profile?.membership_type] || 0 }}.00
+              ₵{{ membershipFees[profile?.membership_type] || 0 }}.00
             </p>
             <p class="text-sm text-gray-600 mt-1">One-time payment</p>
           </div>
-          <div class="text-5xl">💳</div>
+          <div class="text-5xl">📱</div>
         </div>
       </div>
 
-      <!-- Payment Form -->
+      <!-- Payment Methods & Form -->
       <div class="card">
-        <h2 class="text-xl font-semibold text-gray-900 mb-6">
-          Payment Information
+        <h2 class="text-xl font-semibold text-gray-900 mb-2">
+          Pay with Mobile Money
         </h2>
+        <p class="text-sm text-gray-600 mb-6">
+          Select your preferred mobile money network. You will be prompted to
+          approve the payment on your phone.
+        </p>
 
-        <form @submit.prevent="handlePayment" class="space-y-6">
-          <!-- Card Holder Name -->
-          <div>
-            <label
-              for="card-name"
-              class="block text-sm font-medium text-gray-700 mb-1"
+        <!-- Mobile Money Network Badges -->
+        <div class="grid grid-cols-2 gap-4 mb-8">
+          <div
+            class="border-2 border-yellow-400 rounded-xl p-4 flex flex-col items-center bg-yellow-50"
+          >
+            <div
+              class="w-14 h-14 bg-yellow-400 rounded-full flex items-center justify-center mb-3"
             >
-              Cardholder Name *
-            </label>
-            <input
-              id="card-name"
-              v-model="paymentForm.cardName"
-              type="text"
-              required
-              class="input-field"
-              placeholder="John Doe"
-            />
-          </div>
-
-          <!-- Card Details (Stripe Elements would go here in production) -->
-          <div>
-            <label
-              for="card-number"
-              class="block text-sm font-medium text-gray-700 mb-1"
-            >
-              Card Number *
-            </label>
-            <input
-              id="card-number"
-              v-model="paymentForm.cardNumber"
-              type="text"
-              required
-              class="input-field"
-              placeholder="4242 4242 4242 4242"
-              maxlength="19"
-              @input="formatCardNumber"
-            />
-            <p class="text-xs text-gray-500 mt-1">
-              For demo: Use 4242 4242 4242 4242
+              <span class="font-extrabold text-white text-sm tracking-tight"
+                >MTN</span
+              >
+            </div>
+            <p class="font-semibold text-gray-800 text-sm text-center">
+              MTN Mobile Money
             </p>
+            <p class="text-xs text-gray-500 mt-1 text-center">MoMo</p>
           </div>
 
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                for="expiry"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Expiry Date *
-              </label>
-              <input
-                id="expiry"
-                v-model="paymentForm.expiry"
-                type="text"
-                required
-                class="input-field"
-                placeholder="MM/YY"
-                maxlength="5"
-                @input="formatExpiry"
-              />
-            </div>
-            <div>
-              <label
-                for="cvc"
-                class="block text-sm font-medium text-gray-700 mb-1"
-              >
-                CVC *
-              </label>
-              <input
-                id="cvc"
-                v-model="paymentForm.cvc"
-                type="text"
-                required
-                class="input-field"
-                placeholder="123"
-                maxlength="4"
-              />
-            </div>
-          </div>
-
-          <!-- Billing Address -->
-          <div>
-            <label
-              for="billing-address"
-              class="block text-sm font-medium text-gray-700 mb-1"
+          <div
+            class="border-2 border-red-400 rounded-xl p-4 flex flex-col items-center bg-red-50"
+          >
+            <div
+              class="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center mb-3"
             >
-              Billing Address
-            </label>
-            <input
-              id="billing-address"
-              v-model="paymentForm.billingAddress"
-              type="text"
-              class="input-field"
-              placeholder="123 Main St, City, State, ZIP"
-            />
-          </div>
-
-          <!-- Terms and Conditions -->
-          <div class="flex items-start">
-            <input
-              id="terms"
-              v-model="paymentForm.acceptTerms"
-              type="checkbox"
-              required
-              class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
-            />
-            <label for="terms" class="ml-2 text-sm text-gray-600">
-              I agree to the payment terms and conditions. This is a one-time
-              non-refundable membership fee.
-            </label>
-          </div>
-
-          <!-- Submit Button -->
-          <div class="pt-4">
-            <button
-              type="submit"
-              :disabled="processing || !paymentForm.acceptTerms"
-              class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span v-if="processing">Processing Payment...</span>
-              <span v-else
-                >Pay ${{
-                  membershipFees[profile?.membership_type] || 0
-                }}.00</span
+              <span class="font-extrabold text-white text-xs tracking-tight"
+                >Telecel</span
               >
-            </button>
+            </div>
+            <p class="font-semibold text-gray-800 text-sm text-center">
+              Telecel Cash
+            </p>
+            <p class="text-xs text-gray-500 mt-1 text-center">formerly Vodafone Cash</p>
           </div>
-        </form>
+        </div>
+
+        <!-- Terms and Conditions -->
+        <div class="flex items-start mb-6">
+          <input
+            id="terms"
+            v-model="acceptTerms"
+            type="checkbox"
+            class="mt-1 h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
+          />
+          <label for="terms" class="ml-2 text-sm text-gray-600">
+            I agree to the payment terms and conditions. This is a one-time
+            non-refundable membership fee.
+          </label>
+        </div>
+
+        <!-- Pay Button -->
+        <div class="pt-2">
+          <button
+            :disabled="processing || !acceptTerms || !profile"
+            class="w-full btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+            @click="handlePayment"
+          >
+            <span v-if="processing">Processing Payment...</span>
+            <span v-else>
+              Pay ₵{{ membershipFees[profile?.membership_type] || 0 }}.00 via
+              Mobile Money
+            </span>
+          </button>
+        </div>
 
         <div class="mt-6 pt-6 border-t border-gray-200">
           <div
-            class="flex items-center justify-center space-x-4 text-sm text-gray-500"
+            class="flex items-center justify-center space-x-2 text-sm text-gray-500"
           >
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
               <path
@@ -231,7 +171,7 @@
                 clip-rule="evenodd"
               ></path>
             </svg>
-            <span>Secure payment powered by Stripe</span>
+            <span>Secure payment powered by Paystack</span>
           </div>
         </div>
       </div>
@@ -249,34 +189,39 @@
 </template>
 
 <script setup lang="ts">
+declare global {
+  interface Window {
+    PaystackPop: {
+      setup: (options: Record<string, unknown>) => { openIframe: () => void };
+    };
+  }
+}
+
 definePageMeta({
   layout: false,
   middleware: "auth",
 });
 
+useHead({
+  script: [{ src: "https://js.paystack.co/v1/inline.js", defer: true }],
+});
+
+const config = useRuntimeConfig();
 const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 
 const profile = ref<any>(null);
 const processing = ref(false);
+const acceptTerms = ref(false);
 const error = ref("");
 const success = ref("");
 
-// Membership fees based on type
+// Membership fees in GHS
 const membershipFees: Record<string, number> = {
-  associate: 50,
-  honourary: 0, // Honourary members might be free
-  regular: 100,
+  associate: 20,
+  honourary: 20,
+  regular: 20,
 };
-
-const paymentForm = ref({
-  cardName: "",
-  cardNumber: "",
-  expiry: "",
-  cvc: "",
-  billingAddress: "",
-  acceptTerms: false,
-});
 
 onMounted(async () => {
   if (!user.value) return;
@@ -294,21 +239,13 @@ onMounted(async () => {
 
   profile.value = data;
 
-  // Check if user should be on this page
   if (data?.membership_status === "active") {
-    // Already paid, redirect to dashboard
     navigateTo("/dashboard");
   } else if (
     data?.membership_status !== "verified" &&
     data?.membership_status !== "pending_payment"
   ) {
-    // Not yet verified, redirect to verification page
     navigateTo("/verification-pending");
-  }
-
-  // Pre-fill card name with user's name
-  if (data?.full_name) {
-    paymentForm.value.cardName = data.full_name;
   }
 });
 
@@ -330,77 +267,83 @@ const formatDate = (dateString: string) => {
   });
 };
 
-const formatCardNumber = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  let value = input.value.replace(/\s/g, "");
-  let formattedValue = value.match(/.{1,4}/g)?.join(" ") || value;
-  paymentForm.value.cardNumber = formattedValue;
-};
+const handlePayment = () => {
+  if (!profile.value || !user.value) return;
 
-const formatExpiry = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  let value = input.value.replace(/\D/g, "");
-  if (value.length >= 2) {
-    value = value.slice(0, 2) + "/" + value.slice(2, 4);
+  const amount = membershipFees[profile.value.membership_type] ?? 0;
+
+  // Honourary members pay nothing — activate directly
+  if (amount === 0) {
+    activateMembership("FREE_HONOURARY");
+    return;
   }
-  paymentForm.value.expiry = value;
+
+  const reference = `hopecosa_${user.value.id}_${Date.now()}`;
+  processing.value = true;
+  error.value = "";
+
+  const handler = window.PaystackPop.setup({
+    key: config.public.paystackPublicKey,
+    email: profile.value.email,
+    amount: amount * 100, // Paystack expects pesewas (1 GHS = 100 pesewas)
+    currency: "GHS",
+    ref: reference,
+    channels: ["mobile_money"],
+    metadata: {
+      userId: user.value.id,
+      membershipType: profile.value.membership_type,
+    },
+    callback: (response: { reference: string }) => {
+      verifyAndActivate(response.reference);
+    },
+    onClose: () => {
+      processing.value = false;
+    },
+  });
+
+  handler.openIframe();
 };
 
-const handlePayment = async () => {
-  error.value = "";
-  success.value = "";
-  processing.value = true;
-
+const verifyAndActivate = async (reference: string) => {
   try {
-    if (!user.value || !profile.value) {
-      throw new Error("User or profile not found");
-    }
+    const result = await $fetch<{
+      data: { status: string; amount: number };
+    }>(`/api/payment/verify?reference=${encodeURIComponent(reference)}`);
 
-    // Validate card number (basic validation for demo)
-    const cardNumber = paymentForm.value.cardNumber.replace(/\s/g, "");
-    if (cardNumber.length < 13 || cardNumber.length > 19) {
-      throw new Error("Invalid card number");
-    }
-
-    // In production, you would:
-    // 1. Create a Stripe payment intent on your backend
-    // 2. Confirm the payment with Stripe
-    // 3. Update the database after successful payment
-
-    // For demo purposes, simulate payment processing
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    // Simulate successful payment for demo card
-    if (cardNumber === "4242424242424242") {
-      const paymentAmount = membershipFees[profile.value.membership_type] || 0;
-
-      // Update profile with payment information
-      const { error: updateError } = await supabase
-        .from("profiles")
-        .update({
-          membership_status: "active",
-          payment_status: "paid",
-          payment_amount: paymentAmount,
-          payment_date: new Date().toISOString(),
-          stripe_payment_intent_id: `pi_demo_${Date.now()}`,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.value.id);
-
-      if (updateError) throw updateError;
-
-      success.value = "Payment successful! Redirecting to dashboard...";
-
-      setTimeout(() => {
-        navigateTo("/dashboard");
-      }, 2000);
+    if (result?.data?.status === "success") {
+      await activateMembership(reference, result.data.amount / 100);
     } else {
-      throw new Error(
-        "Payment failed. Please use card 4242 4242 4242 4242 for demo.",
-      );
+      throw new Error("Payment verification failed. Please contact support.");
     }
   } catch (err: any) {
-    error.value = err.message || "Payment processing failed";
+    error.value = err.message || "Payment verification failed";
+    processing.value = false;
+  }
+};
+
+const activateMembership = async (reference: string, amount?: number) => {
+  try {
+    const paymentAmount =
+      amount ?? membershipFees[profile.value.membership_type] ?? 0;
+
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({
+        membership_status: "active",
+        payment_status: "paid",
+        payment_amount: paymentAmount,
+        payment_date: new Date().toISOString(),
+        paystack_transaction_id: reference,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", user.value!.id);
+
+    if (updateError) throw updateError;
+
+    success.value = "Payment successful! Redirecting to dashboard...";
+    setTimeout(() => navigateTo("/dashboard"), 2000);
+  } catch (err: any) {
+    error.value = err.message || "Failed to activate membership";
   } finally {
     processing.value = false;
   }

@@ -4,7 +4,7 @@
     <aside class="w-64 bg-gray-900 text-white flex flex-col">
       <div class="p-6 border-b border-gray-700">
         <h1 class="text-xl font-bold">Admin Panel</h1>
-        <p class="text-sm text-gray-400 mt-1">Student Association</p>
+        <p class="text-sm text-gray-400 mt-1">HOPECOSA</p>
       </div>
 
       <nav class="flex-1 p-4 space-y-1">

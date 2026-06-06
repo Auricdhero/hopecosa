@@ -22,9 +22,7 @@
           </svg>
         </div>
         <h2 class="text-3xl font-extrabold text-white">Admin Login</h2>
-        <p class="mt-2 text-sm text-gray-400">
-          Student Association Administration
-        </p>
+        <p class="mt-2 text-sm text-gray-400">HOPECOSA Administration</p>
       </div>
 
       <form

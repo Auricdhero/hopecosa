@@ -421,7 +421,7 @@
               required
               class="input-field"
             >
-              <option value="">Select year...</option>
+              <option :value="null">Select year...</option>
               <option v-for="year in yearOptions" :key="year" :value="year">
                 {{ year }}
               </option>
@@ -499,7 +499,7 @@ const profile = ref({
   full_name: "",
   email: "",
   bio: "",
-  year_group: "",
+  year_group: null as number | null,
   phone: "",
   major: "",
 });
@@ -579,7 +579,7 @@ onMounted(async () => {
       full_name: data.full_name || "",
       email: data.email || user.value.email || "",
       bio: data.bio || "",
-      year_group: data.year_group || "",
+      year_group: data.year_group ?? null,
       phone: data.phone || "",
       major: data.major || "",
     };
@@ -729,7 +729,7 @@ const handleSubmit = async () => {
       full_name: profile.value.full_name,
       email: profile.value.email,
       bio: profile.value.bio,
-      year_group: profile.value.year_group,
+      year_group: profile.value.year_group || null,
       phone: profile.value.phone,
       major: profile.value.major,
       updated_at: new Date().toISOString(),
