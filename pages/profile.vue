@@ -54,7 +54,7 @@
               membershipInfo.status === 'pending_payment',
             'bg-blue-100 text-blue-800':
               membershipInfo.status === 'pending_biodata',
-            'bg-gray-100 text-gray-800': membershipInfo.status === 'inactive',
+            'bg-red-100 text-red-800': membershipInfo.status === 'inactive',
           }"
           class="px-3 py-1 rounded-full text-sm font-medium"
         >

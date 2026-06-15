@@ -101,6 +101,10 @@
           <p class="font-medium">{{ userProfile.full_name || "Not set" }}</p>
         </div>
         <div>
+          <p class="text-sm text-gray-600">Alumni ID</p>
+          <p class="font-medium">{{ userProfile.alumni_id || "Not set" }}</p>
+        </div>
+        <div>
           <p class="text-sm text-gray-600">Email</p>
           <p class="font-medium">{{ userProfile.email }}</p>
         </div>
