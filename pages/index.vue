@@ -4,7 +4,7 @@
   >
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="text-center text-white mb-12">
-        <h1 class="text-5xl font-bold mb-4">Student Association</h1>
+        <h1 class="text-5xl font-bold mb-4">HOPECOSA</h1>
         <p class="text-xl opacity-90">Connect, Share, and Grow Together</p>
       </div>
 

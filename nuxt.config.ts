@@ -24,9 +24,11 @@ export default defineNuxtConfig({
   css: ["~/assets/css/main.css"],
 
   runtimeConfig: {
+    paystackSecretKey: process.env.PAYSTACK_SECRET_KEY,
     public: {
       supabaseUrl: process.env.SUPABASE_URL,
       supabaseKey: process.env.SUPABASE_KEY,
+      paystackPublicKey: process.env.PAYSTACK_PUBLIC_KEY,
     },
   },
 });

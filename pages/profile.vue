@@ -54,7 +54,7 @@
               membershipInfo.status === 'pending_payment',
             'bg-blue-100 text-blue-800':
               membershipInfo.status === 'pending_biodata',
-            'bg-gray-100 text-gray-800': membershipInfo.status === 'inactive',
+            'bg-red-100 text-red-800': membershipInfo.status === 'inactive',
           }"
           class="px-3 py-1 rounded-full text-sm font-medium"
         >
@@ -312,6 +312,52 @@
 
     <div class="card">
       <h2 class="text-xl font-semibold mb-6">Personal Information</h2>
+
+      <div class="mb-8 pb-8 border-b border-gray-200">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">
+          Profile Picture
+        </h3>
+
+        <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div
+            class="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border border-gray-200 flex items-center justify-center"
+          >
+            <img
+              v-if="avatarUrl"
+              :src="avatarUrl"
+              alt="Profile picture"
+              class="w-full h-full object-cover"
+            />
+            <span v-else class="text-2xl font-semibold text-gray-500">
+              {{ profile.full_name?.charAt(0)?.toUpperCase() || "U" }}
+            </span>
+          </div>
+
+          <div class="flex-1">
+            <p class="text-sm text-gray-600 mb-3">
+              Upload a square image for the best result (max 5MB).
+            </p>
+            <div class="flex flex-wrap items-center gap-3">
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/jpg,image/webp,image/gif"
+                @change="handleAvatarSelect"
+                class="block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+              />
+              <button
+                type="button"
+                @click="uploadAvatar"
+                :disabled="!selectedAvatarFile || avatarUploading"
+                class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span v-if="avatarUploading">Uploading...</span>
+                <span v-else>Upload Picture</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <div class="grid md:grid-cols-2 gap-6">
           <div>
@@ -375,7 +421,7 @@
               required
               class="input-field"
             >
-              <option value="">Select year...</option>
+              <option :value="null">Select year...</option>
               <option v-for="year in yearOptions" :key="year" :value="year">
                 {{ year }}
               </option>
@@ -453,7 +499,7 @@ const profile = ref({
   full_name: "",
   email: "",
   bio: "",
-  year_group: "",
+  year_group: null as number | null,
   phone: "",
   major: "",
 });
@@ -468,6 +514,12 @@ const membershipInfo = ref({
 const loading = ref(false);
 const error = ref("");
 const successMessage = ref("");
+const avatarUrl = ref("");
+const selectedAvatarFile = ref<File | null>(null);
+const avatarUploading = ref(false);
+type StorageFile = {
+  name: string;
+};
 
 // Helper functions
 const getMembershipLabel = (type: string) => {
@@ -527,7 +579,7 @@ onMounted(async () => {
       full_name: data.full_name || "",
       email: data.email || user.value.email || "",
       bio: data.bio || "",
-      year_group: data.year_group || "",
+      year_group: data.year_group ?? null,
       phone: data.phone || "",
       major: data.major || "",
     };
@@ -540,7 +592,129 @@ onMounted(async () => {
       selectedAt: data.membership_selected_at || "",
     };
   }
+
+  await loadAvatar();
 });
+
+const loadAvatar = async () => {
+  if (!user.value) return;
+
+  try {
+    const { data: files, error: listError } = await supabase.storage
+      .from("uploads")
+      .list(`${user.value.id}/profile`, { limit: 100 });
+
+    if (listError) throw listError;
+
+    const imageFiles = ((files || []) as StorageFile[]).filter(
+      (file: StorageFile) =>
+        !!file.name && /\.(png|jpe?g|webp|gif)$/i.test(file.name),
+    );
+
+    if (imageFiles.length === 0) {
+      avatarUrl.value = "";
+      return;
+    }
+
+    const latestAvatar = imageFiles
+      .slice()
+      .sort((a: StorageFile, b: StorageFile) => {
+        const tsA = Number(a.name.match(/avatar_(\d+)/)?.[1] || 0);
+        const tsB = Number(b.name.match(/avatar_(\d+)/)?.[1] || 0);
+        return tsB - tsA;
+      })[0];
+    const filePath = `${user.value.id}/profile/${latestAvatar.name}`;
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("uploads").getPublicUrl(filePath);
+
+    avatarUrl.value = `${publicUrl}?t=${Date.now()}`;
+  } catch (err: any) {
+    console.error("Error loading avatar:", err);
+  }
+};
+
+const handleAvatarSelect = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0] || null;
+
+  if (!file) {
+    selectedAvatarFile.value = null;
+    return;
+  }
+
+  if (!file.type.startsWith("image/")) {
+    error.value = "Please select a valid image file";
+    selectedAvatarFile.value = null;
+    target.value = "";
+    return;
+  }
+
+  const maxSize = 5 * 1024 * 1024;
+  if (file.size > maxSize) {
+    error.value = "Image must be 5MB or less";
+    selectedAvatarFile.value = null;
+    target.value = "";
+    return;
+  }
+
+  error.value = "";
+  selectedAvatarFile.value = file;
+};
+
+const uploadAvatar = async () => {
+  if (!user.value || !selectedAvatarFile.value) return;
+
+  error.value = "";
+  successMessage.value = "";
+  avatarUploading.value = true;
+
+  try {
+    const { data: existingFiles, error: listError } = await supabase.storage
+      .from("uploads")
+      .list(`${user.value.id}/profile`, { limit: 100 });
+
+    if (listError) throw listError;
+
+    const existingPaths = ((existingFiles || []) as StorageFile[])
+      .filter((file: StorageFile) => !!file.name)
+      .map((file: StorageFile) => `${user.value!.id}/profile/${file.name}`);
+
+    if (existingPaths.length > 0) {
+      const { error: removeError } = await supabase.storage
+        .from("uploads")
+        .remove(existingPaths);
+
+      if (removeError) throw removeError;
+    }
+
+    const file = selectedAvatarFile.value;
+    const extension = file.name.split(".").pop()?.toLowerCase() || "jpg";
+    const newPath = `${user.value.id}/profile/avatar_${Date.now()}.${extension}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from("uploads")
+      .upload(newPath, file, {
+        contentType: file.type || "image/jpeg",
+        cacheControl: "3600",
+      });
+
+    if (uploadError) throw uploadError;
+
+    const {
+      data: { publicUrl },
+    } = supabase.storage.from("uploads").getPublicUrl(newPath);
+
+    avatarUrl.value = `${publicUrl}?t=${Date.now()}`;
+    selectedAvatarFile.value = null;
+    successMessage.value = "Profile picture uploaded successfully";
+  } catch (err: any) {
+    const statusCode = err?.statusCode ? ` (${err.statusCode})` : "";
+    error.value = `${err?.message || "Failed to upload profile picture"}${statusCode}`;
+  } finally {
+    avatarUploading.value = false;
+  }
+};
 
 const handleSubmit = async () => {
   if (!user.value) return;
@@ -555,7 +729,7 @@ const handleSubmit = async () => {
       full_name: profile.value.full_name,
       email: profile.value.email,
       bio: profile.value.bio,
-      year_group: profile.value.year_group,
+      year_group: profile.value.year_group || null,
       phone: profile.value.phone,
       major: profile.value.major,
       updated_at: new Date().toISOString(),
@@ -565,7 +739,7 @@ const handleSubmit = async () => {
     if (isBiodata.value) {
       updateData.biodata_completed = true;
       updateData.biodata_completed_at = new Date().toISOString();
-      updateData.membership_status = "pending_verification";
+      updateData.membership_status = "pending";
     }
 
     const { error: updateError } = await supabase

@@ -5,7 +5,7 @@
         <div class="flex justify-between h-16">
           <div class="flex items-center">
             <NuxtLink to="/" class="text-2xl font-bold text-primary-600">
-              Student Association
+              HOPECOSA
             </NuxtLink>
           </div>
           <div class="flex items-center space-x-4">
@@ -46,7 +46,7 @@
 
     <footer class="bg-gray-800 text-white py-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <p>&copy; 2026 Student Association. All rights reserved.</p>
+        <p>&copy; 2026 HOPECOSA. All rights reserved.</p>
       </div>
     </footer>
   </div>

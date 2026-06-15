@@ -552,8 +552,8 @@
                 required
                 class="input-field"
                 placeholder="2026"
-                :min="new Date().getFullYear()"
-                :max="new Date().getFullYear() - 1"
+                :min="2015"
+                :max="new Date().getFullYear() + 10"
               />
             </div>
 
@@ -588,7 +588,7 @@
               />
             </div>
 
-            <div>
+            <!-- <div>
               <label
                 for="certificate-upload"
                 class="block text-sm font-medium text-gray-700 mb-1"
@@ -606,7 +606,7 @@
               <p class="text-xs text-gray-500 mt-1">
                 Accepted formats: PDF, JPG, PNG (Max 5MB)
               </p>
-            </div>
+            </div> -->
 
             <div class="flex items-start">
               <input
@@ -696,7 +696,8 @@ onMounted(async () => {
 
       const { data: insertedData, error: createError } = await supabase
         .from("profiles")
-        .insert(profileData)
+        .update(profileData)
+        .eq("id", user.value.id)
         .select();
 
       if (createError) {
@@ -862,7 +863,7 @@ const handleSubmit = async () => {
     // Prepare the update data
     const updateData: any = {
       membership_type: selectedType.value,
-      membership_status: "pending_biodata",
+      membership_status: "pending",
       membership_details: formData.value,
       membership_selected_at: new Date().toISOString(),
     };
