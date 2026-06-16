@@ -140,7 +140,7 @@ const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 
 const currentYear = new Date().getFullYear();
-const yearOptions = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
+const yearOptions = Array.from({ length: 22 }, (_, i) => currentYear - 11 + i);
 
 const form = ref({
   email: "",

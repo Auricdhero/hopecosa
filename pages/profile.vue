@@ -555,7 +555,7 @@ const formatStatus = (status: string) => {
 
 // Generate year options (current year - 10 to current year + 10)
 const currentYear = new Date().getFullYear();
-const yearOptions = Array.from({ length: 21 }, (_, i) => currentYear - 10 + i);
+const yearOptions = Array.from({ length: 22 }, (_, i) => currentYear - 11 + i);
 
 onMounted(async () => {
   if (!user.value) return;
