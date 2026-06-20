@@ -222,7 +222,10 @@ const handleSignup = async () => {
         console.log("Profile created successfully:", profileData);
       }
 
-      navigateTo("/auth/select-membership");
+      navigateTo({
+        path: "/auth/check-email",
+        query: { email: form.value.email },
+      });
     }
   } catch (err: any) {
     error.value = err.message || "An error occurred during signup";
