@@ -103,6 +103,12 @@
                   membershipInfo.details.full_name
                 }}</span>
               </div>
+              <div v-if="membershipInfo.details.title" class="flex flex-col">
+                <span class="text-gray-600">Title</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.title
+                }}</span>
+              </div>
               <div v-if="membershipInfo.details.gender" class="flex flex-col">
                 <span class="text-gray-600">Gender</span>
                 <span class="text-gray-900 font-medium capitalize">{{
@@ -152,6 +158,93 @@
                 >
               </div>
               <div
+                v-if="membershipInfo.details.previousAffiliation"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Previous Affiliation</span>
+                <span class="text-gray-900 font-medium">{{
+                  formatAffiliation(membershipInfo.details.previousAffiliation)
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.affiliationStartYear"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Affiliation Start Year</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.affiliationStartYear
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.affiliationEndYear"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Affiliation End Year</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.affiliationEndYear
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.nationality"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Nationality</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.nationality
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.regionOfResidence"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Region of Residence</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.regionOfResidence
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.tertiaryStatus"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Tertiary Status</span>
+                <span class="text-gray-900 font-medium">{{
+                  formatStatus(membershipInfo.details.tertiaryStatus)
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.tertiaryCompletionYear"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Year of Completion - Tertiary</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.tertiaryCompletionYear
+                }}</span>
+              </div>
+              <div v-if="membershipInfo.details.level" class="flex flex-col">
+                <span class="text-gray-600">Level</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.level
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.programmeRead"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Programme Read - Tertiary</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.programmeRead
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.employmentStatus"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Employment Status</span>
+                <span class="text-gray-900 font-medium">{{
+                  formatStatus(membershipInfo.details.employmentStatus)
+                }}</span>
+              </div>
+              <div
                 v-if="membershipInfo.details.occupation"
                 class="flex flex-col"
               >
@@ -161,11 +254,15 @@
                 }}</span>
               </div>
               <div
-                v-if="membershipInfo.details.organizationCompany"
+                v-if="
+                  membershipInfo.details.employerInstitution ||
+                  membershipInfo.details.organizationCompany
+                "
                 class="flex flex-col"
               >
-                <span class="text-gray-600">Organization/Company</span>
+                <span class="text-gray-600">Employer Institution</span>
                 <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.employerInstitution ||
                   membershipInfo.details.organizationCompany
                 }}</span>
               </div>
@@ -233,6 +330,99 @@
               Professional Information
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+              <div v-if="membershipInfo.details.gender" class="flex flex-col">
+                <span class="text-gray-600">Gender</span>
+                <span class="text-gray-900 font-medium capitalize">{{
+                  membershipInfo.details.gender
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.previousAffiliation"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Previous Affiliation</span>
+                <span class="text-gray-900 font-medium">{{
+                  formatAffiliation(membershipInfo.details.previousAffiliation)
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.affiliationStartYear"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Affiliation Start Year</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.affiliationStartYear
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.affiliationEndYear"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Affiliation End Year</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.affiliationEndYear
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.nationality"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Nationality</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.nationality
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.countryOfResidence"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Country of Residence</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.countryOfResidence
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.regionOfResidence"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Region of Residence</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.regionOfResidence
+                }}</span>
+              </div>
+              <div v-if="membershipInfo.details.suburb" class="flex flex-col">
+                <span class="text-gray-600">Suburb</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.suburb
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.employmentStatus"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Employment Status</span>
+                <span class="text-gray-900 font-medium">{{
+                  formatStatus(membershipInfo.details.employmentStatus)
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.occupation"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Occupation</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.occupation
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.employerInstitution"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Employer Institution</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.employerInstitution
+                }}</span>
+              </div>
               <div
                 v-if="membershipInfo.details.professionalTitle"
                 class="flex flex-col"
@@ -445,7 +635,7 @@
           </div>
         </div>
 
-        <div>
+        <!-- <div>
           <label
             for="major"
             class="block text-sm font-medium text-gray-700 mb-1"
@@ -459,7 +649,7 @@
             <option value="Business">Business</option>
             <option value="Home Economics">Home Economics</option>
           </select>
-        </div>
+        </div> -->
 
         <div class="flex justify-end space-x-4">
           <button
@@ -551,6 +741,16 @@ const formatStatus = (status: string) => {
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
+};
+
+const formatAffiliation = (affiliation: string) => {
+  const labels: Record<string, string> = {
+    ex_student_not_complete: "Ex-student (did not complete)",
+    former_faculty_member: "Former faculty member",
+    former_staff: "Former staff",
+    no_previous_affiliation: "No previous affiliation",
+  };
+  return labels[affiliation] || formatStatus(affiliation);
 };
 
 // Generate year options (current year - 10 to current year + 10)

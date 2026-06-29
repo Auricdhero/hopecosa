@@ -120,6 +120,29 @@
 
             <div>
               <label
+                for="associate-title"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Title *</label
+              >
+              <select
+                id="associate-title"
+                v-model="formData.title"
+                required
+                class="input-field"
+              >
+                <option value="" disabled>Select title</option>
+                <option value="Mr.">Mr.</option>
+                <option value="Mrs.">Mrs.</option>
+                <option value="Ms.">Ms.</option>
+                <option value="Miss">Miss</option>
+                <option value="Dr.">Dr.</option>
+                <option value="Prof.">Prof.</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label
                 for="full-name-id"
                 class="block text-sm font-medium text-gray-700 mb-1"
                 >Full Name (as it should appear on ID card) *</label
@@ -168,6 +191,76 @@
                   required
                   class="input-field"
                   :max="new Date().toISOString().split('T')[0]"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="associate-previous-affiliation"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Previous Affiliation with Hope College *</label
+              >
+              <select
+                id="associate-previous-affiliation"
+                v-model="formData.previousAffiliation"
+                required
+                class="input-field"
+              >
+                <option value="" disabled>Select affiliation</option>
+                <option value="ex_student_not_complete">
+                  Ex-student (did not complete)
+                </option>
+                <option value="former_faculty_member">
+                  Former faculty member
+                </option>
+                <option value="former_staff">Former staff</option>
+                <option value="no_previous_affiliation">
+                  No previous affiliation
+                </option>
+              </select>
+            </div>
+
+            <div
+              v-if="
+                formData.previousAffiliation &&
+                formData.previousAffiliation !== 'no_previous_affiliation'
+              "
+              class="grid md:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  for="associate-affiliation-start-year"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Start Year *</label
+                >
+                <input
+                  id="associate-affiliation-start-year"
+                  v-model.number="formData.affiliationStartYear"
+                  type="number"
+                  required
+                  class="input-field"
+                  placeholder="e.g., 2018"
+                  :min="1950"
+                  :max="new Date().getFullYear() + 10"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="associate-affiliation-end-year"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >End Year *</label
+                >
+                <input
+                  id="associate-affiliation-end-year"
+                  v-model.number="formData.affiliationEndYear"
+                  type="number"
+                  required
+                  class="input-field"
+                  placeholder="e.g., 2021"
+                  :min="1950"
+                  :max="new Date().getFullYear() + 10"
                 />
               </div>
             </div>
@@ -225,6 +318,22 @@
             <div class="grid md:grid-cols-2 gap-4">
               <div>
                 <label
+                  for="associate-nationality"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Nationality *</label
+                >
+                <input
+                  id="associate-nationality"
+                  v-model="formData.nationality"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Nationality"
+                />
+              </div>
+
+              <div>
+                <label
                   for="city"
                   class="block text-sm font-medium text-gray-700 mb-1"
                   >City *</label
@@ -243,7 +352,7 @@
                 <label
                   for="country"
                   class="block text-sm font-medium text-gray-700 mb-1"
-                  >Country *</label
+                  >Country of Residence *</label
                 >
                 <input
                   id="country"
@@ -254,6 +363,114 @@
                   placeholder="Country"
                 />
               </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="associate-region"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Region of Residence *</label
+                >
+                <input
+                  id="associate-region"
+                  v-model="formData.regionOfResidence"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Region"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="associate-tertiary-status"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Tertiary Status *</label
+                >
+                <select
+                  id="associate-tertiary-status"
+                  v-model="formData.tertiaryStatus"
+                  required
+                  class="input-field"
+                >
+                  <option value="" disabled>Select status</option>
+                  <option value="student">Student</option>
+                  <option value="completed">Completed</option>
+                  <option value="ongoing">Ongoing</option>
+                  <option value="not_applicable">Not applicable</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="associate-tertiary-completion-year"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Year of Completion - Tertiary</label
+                >
+                <input
+                  id="associate-tertiary-completion-year"
+                  v-model.number="formData.tertiaryCompletionYear"
+                  type="number"
+                  class="input-field"
+                  placeholder="e.g., 2026"
+                  :min="1950"
+                  :max="new Date().getFullYear() + 10"
+                />
+              </div>
+
+              <div v-if="formData.tertiaryStatus === 'student'">
+                <label
+                  for="associate-level"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Level *</label
+                >
+                <input
+                  id="associate-level"
+                  v-model="formData.level"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="e.g., Level 200"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="associate-programme-read"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Programme Read - Tertiary *</label
+              >
+              <input
+                id="associate-programme-read"
+                v-model="formData.programmeRead"
+                type="text"
+                required
+                class="input-field"
+                placeholder="e.g., BSc Information Technology"
+              />
+            </div>
+
+            <div>
+              <label
+                for="associate-employment-status"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Employment Status *</label
+              >
+              <select
+                id="associate-employment-status"
+                v-model="formData.employmentStatus"
+                required
+                class="input-field"
+              >
+                <option value="" disabled>Select employment status</option>
+                <option value="employed">Employed</option>
+                <option value="unemployed">Unemployed</option>
+                <option value="self_employed">Self-Employed</option>
+              </select>
             </div>
 
             <div>
@@ -274,16 +491,16 @@
 
             <div>
               <label
-                for="organization-company"
+                for="associate-employer-institution"
                 class="block text-sm font-medium text-gray-700 mb-1"
-                >Organization / Company (if applicable)</label
+                >Employer Institution</label
               >
               <input
-                id="organization-company"
-                v-model="formData.organizationCompany"
+                id="associate-employer-institution"
+                v-model="formData.employerInstitution"
                 type="text"
                 class="input-field"
-                placeholder="Company or organization name"
+                placeholder="Company or institution name"
               />
             </div>
 
@@ -307,6 +524,28 @@
 
             <!-- Contact Information -->
             <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="honorary-title"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Title *</label
+                >
+                <select
+                  id="honorary-title"
+                  v-model="formData.professionalTitle"
+                  required
+                  class="input-field"
+                >
+                  <option value="" disabled>Select title</option>
+                  <option value="Mr.">Mr.</option>
+                  <option value="Mrs.">Mrs.</option>
+                  <option value="Dr.">Dr.</option>
+                  <option value="Prof.">Prof.</option>
+                  <option value="PhD (Dr)">PhD (Dr)</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
               <div>
                 <label
                   for="full-name-hon"
@@ -342,6 +581,24 @@
 
             <div>
               <label
+                for="honorary-gender"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Gender *</label
+              >
+              <select
+                id="honorary-gender"
+                v-model="formData.gender"
+                required
+                class="input-field"
+              >
+                <option value="" disabled>Select gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
+            </div>
+
+            <div>
+              <label
                 for="phone-hon"
                 class="block text-sm font-medium text-gray-700 mb-1"
                 >Phone Number *</label
@@ -358,26 +615,193 @@
 
             <div>
               <label
-                for="professional-title"
+                for="honorary-previous-affiliation"
                 class="block text-sm font-medium text-gray-700 mb-1"
-                >Professional Title *</label
+                >Previous Affiliation with Hope College *</label
               >
               <select
-                id="professional-title"
-                v-model="formData.professionalTitle"
+                id="honorary-previous-affiliation"
+                v-model="formData.previousAffiliation"
                 required
                 class="input-field"
               >
-                <option value="" disabled>Select title</option>
-                <option value="Dr.">Dr.</option>
-                <option value="Prof.">Prof.</option>
-                <option value="Hon.">Hon.</option>
-                <option value="Rev.">Rev.</option>
-                <option value="Mr.">Mr.</option>
-                <option value="Mrs.">Mrs.</option>
-                <option value="Ms.">Ms.</option>
-                <option value="Other">Other</option>
+                <option value="" disabled>Select affiliation</option>
+                <option value="ex_student_not_complete">
+                  Ex-student (did not complete)
+                </option>
+                <option value="former_faculty_member">
+                  Former faculty member
+                </option>
+                <option value="former_staff">Former staff</option>
+                <option value="no_previous_affiliation">
+                  No previous affiliation
+                </option>
               </select>
+            </div>
+
+            <div
+              v-if="
+                formData.previousAffiliation &&
+                formData.previousAffiliation !== 'no_previous_affiliation'
+              "
+              class="grid md:grid-cols-2 gap-4"
+            >
+              <div>
+                <label
+                  for="honorary-affiliation-start-year"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Start Year *</label
+                >
+                <input
+                  id="honorary-affiliation-start-year"
+                  v-model.number="formData.affiliationStartYear"
+                  type="number"
+                  required
+                  class="input-field"
+                  placeholder="e.g., 2004"
+                  :min="1950"
+                  :max="new Date().getFullYear() + 10"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="honorary-affiliation-end-year"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >End Year *</label
+                >
+                <input
+                  id="honorary-affiliation-end-year"
+                  v-model.number="formData.affiliationEndYear"
+                  type="number"
+                  required
+                  class="input-field"
+                  placeholder="e.g., 2008"
+                  :min="1950"
+                  :max="new Date().getFullYear() + 10"
+                />
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="honorary-nationality"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Nationality *</label
+                >
+                <input
+                  id="honorary-nationality"
+                  v-model="formData.nationality"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Nationality"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="honorary-country-residence"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Country of Residence *</label
+                >
+                <input
+                  id="honorary-country-residence"
+                  v-model="formData.countryOfResidence"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Country"
+                />
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="honorary-region-residence"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Region of Residence *</label
+                >
+                <input
+                  id="honorary-region-residence"
+                  v-model="formData.regionOfResidence"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Region"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="honorary-suburb"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Suburb *</label
+                >
+                <input
+                  id="honorary-suburb"
+                  v-model="formData.suburb"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Suburb"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="honorary-employment-status"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Employment Status *</label
+              >
+              <select
+                id="honorary-employment-status"
+                v-model="formData.employmentStatus"
+                required
+                class="input-field"
+              >
+                <option value="" disabled>Select employment status</option>
+                <option value="employed">Employed</option>
+                <option value="unemployed">Unemployed</option>
+                <option value="self_employed">Self-Employed</option>
+              </select>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="honorary-occupation"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Occupation *</label
+                >
+                <input
+                  id="honorary-occupation"
+                  v-model="formData.occupation"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Current occupation"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="honorary-employer-institution"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Employer Institution *</label
+                >
+                <input
+                  id="honorary-employer-institution"
+                  v-model="formData.employerInstitution"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Employer or institution"
+                />
+              </div>
             </div>
 
             <div>
