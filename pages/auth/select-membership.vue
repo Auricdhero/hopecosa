@@ -963,6 +963,237 @@
               />
             </div>
 
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="regular-gender"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Gender *</label
+                >
+                <select
+                  id="regular-gender"
+                  v-model="formData.gender"
+                  required
+                  class="input-field"
+                >
+                  <option value="" disabled>Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                  <option value="other">Other</option>
+                  <option value="prefer-not-to-say">Prefer not to say</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  for="regular-nationality"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Nationality *</label
+                >
+                <input
+                  id="regular-nationality"
+                  v-model="formData.nationality"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Nationality"
+                />
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="regular-country-residence"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Country of Residence *</label
+                >
+                <input
+                  id="regular-country-residence"
+                  v-model="formData.countryOfResidence"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Country"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="regular-region-residence"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Region of Residence *</label
+                >
+                <input
+                  id="regular-region-residence"
+                  v-model="formData.regionOfResidence"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Region"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="regular-suburb"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Suburb *</label
+              >
+              <input
+                id="regular-suburb"
+                v-model="formData.suburb"
+                type="text"
+                required
+                class="input-field"
+                placeholder="Suburb"
+              />
+            </div>
+
+            <div>
+              <label
+                for="regular-tertiary-institution"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Tertiary Institution *</label
+              >
+              <input
+                id="regular-tertiary-institution"
+                v-model="formData.tertiaryInstitution"
+                type="text"
+                required
+                class="input-field"
+                placeholder="Institution name"
+              />
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="regular-tertiary-status"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Tertiary Status *</label
+                >
+                <select
+                  id="regular-tertiary-status"
+                  v-model="formData.tertiaryStatus"
+                  required
+                  class="input-field"
+                >
+                  <option value="" disabled>Select status</option>
+                  <option value="student">Student</option>
+                  <option value="completed">Completed</option>
+                  <option value="ongoing">Ongoing</option>
+                  <option value="not_applicable">Not applicable</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  for="regular-tertiary-completion-year"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Year of Completion - Tertiary *</label
+                >
+                <input
+                  id="regular-tertiary-completion-year"
+                  v-model.number="formData.tertiaryCompletionYear"
+                  type="number"
+                  required
+                  class="input-field"
+                  placeholder="2026"
+                  :min="1950"
+                  :max="new Date().getFullYear() + 10"
+                />
+              </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="regular-level"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Level *</label
+                >
+                <input
+                  id="regular-level"
+                  v-model="formData.level"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="e.g., Level 300"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="regular-program-read"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Program Read - Tertiary *</label
+                >
+                <input
+                  id="regular-program-read"
+                  v-model="formData.programmeRead"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="e.g., BSc Computer Science"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label
+                for="regular-employment-status"
+                class="block text-sm font-medium text-gray-700 mb-1"
+                >Employment Status *</label
+              >
+              <select
+                id="regular-employment-status"
+                v-model="formData.employmentStatus"
+                required
+                class="input-field"
+              >
+                <option value="" disabled>Select employment status</option>
+                <option value="employed">Employed</option>
+                <option value="unemployed">Unemployed</option>
+                <option value="self_employed">Self-Employed</option>
+              </select>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="regular-occupation"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Occupation *</label
+                >
+                <input
+                  id="regular-occupation"
+                  v-model="formData.occupation"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Current occupation"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="regular-employer-institution"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Employer Institution *</label
+                >
+                <input
+                  id="regular-employer-institution"
+                  v-model="formData.employerInstitution"
+                  type="text"
+                  required
+                  class="input-field"
+                  placeholder="Employer or institution"
+                />
+              </div>
+            </div>
+
             <div>
               <label
                 for="graduation-year-reg"
@@ -1001,7 +1232,7 @@
               <label
                 for="leadership-role"
                 class="block text-sm font-medium text-gray-700 mb-1"
-                >Leadership Role - SRC (Optional)</label
+                >HC SRC Leadership Role Held (Optional)</label
               >
               <input
                 id="leadership-role"

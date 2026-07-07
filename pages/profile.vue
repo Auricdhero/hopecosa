@@ -270,17 +270,119 @@
           </div>
 
           <!-- Regular Member Specific -->
-          <div
-            v-if="
-              membershipInfo.type === 'regular' &&
-              membershipInfo.details.yearOfGraduation
-            "
-            class="mb-4"
-          >
+          <div v-if="membershipInfo.type === 'regular'" class="mb-4">
             <p class="text-xs font-semibold text-gray-500 mb-2">
-              Academic Information
+              Regular Member Information
             </p>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+              <div v-if="membershipInfo.details.gender" class="flex flex-col">
+                <span class="text-gray-600">Gender</span>
+                <span class="text-gray-900 font-medium capitalize">{{
+                  membershipInfo.details.gender
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.nationality"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Nationality</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.nationality
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.countryOfResidence"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Country of Residence</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.countryOfResidence
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.regionOfResidence"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Region of Residence</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.regionOfResidence
+                }}</span>
+              </div>
+              <div v-if="membershipInfo.details.suburb" class="flex flex-col">
+                <span class="text-gray-600">Suburb</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.suburb
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.tertiaryInstitution"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Tertiary Institution</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.tertiaryInstitution
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.tertiaryStatus"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Tertiary Status</span>
+                <span class="text-gray-900 font-medium">{{
+                  formatStatus(membershipInfo.details.tertiaryStatus)
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.tertiaryCompletionYear"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Year of Completion - Tertiary</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.tertiaryCompletionYear
+                }}</span>
+              </div>
+              <div v-if="membershipInfo.details.level" class="flex flex-col">
+                <span class="text-gray-600">Level</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.level
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.programmeRead"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Program Read - Tertiary</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.programmeRead
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.employmentStatus"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Employment Status</span>
+                <span class="text-gray-900 font-medium">{{
+                  formatStatus(membershipInfo.details.employmentStatus)
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.occupation"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Occupation</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.occupation
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.employerInstitution"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Employer Institution</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.employerInstitution
+                }}</span>
+              </div>
               <div
                 v-if="membershipInfo.details.yearOfGraduation"
                 class="flex flex-col"
@@ -303,7 +405,7 @@
                 v-if="membershipInfo.details.leadershipRole"
                 class="flex flex-col"
               >
-                <span class="text-gray-600">Leadership Role (SRC)</span>
+                <span class="text-gray-600">HC SRC Leadership Role Held</span>
                 <span class="text-gray-900 font-medium">{{
                   membershipInfo.details.leadershipRole
                 }}</span>
@@ -635,22 +737,6 @@
           </div>
         </div>
 
-        <!-- <div>
-          <label
-            for="major"
-            class="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Major/Field of Study
-          </label>
-          <select id="major" v-model="profile.major" class="input-field">
-            <option value="">Select major...</option>
-            <option value="General Science">General Science</option>
-            <option value="General Arts">General Arts</option>
-            <option value="Business">Business</option>
-            <option value="Home Economics">Home Economics</option>
-          </select>
-        </div> -->
-
         <div class="flex justify-end space-x-4">
           <button
             type="button"
@@ -691,7 +777,6 @@ const profile = ref({
   bio: "",
   year_group: null as number | null,
   phone: "",
-  major: "",
 });
 
 const membershipInfo = ref({
@@ -781,7 +866,6 @@ onMounted(async () => {
       bio: data.bio || "",
       year_group: data.year_group ?? null,
       phone: data.phone || "",
-      major: data.major || "",
     };
 
     // Set membership information
@@ -931,7 +1015,6 @@ const handleSubmit = async () => {
       bio: profile.value.bio,
       year_group: profile.value.year_group || null,
       phone: profile.value.phone,
-      major: profile.value.major,
       updated_at: new Date().toISOString(),
     };
 
