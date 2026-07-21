@@ -272,13 +272,11 @@
                   class="block text-sm font-medium text-gray-700 mb-1"
                   >Phone Number *</label
                 >
-                <input
+                <PhoneNumberField
                   id="phone-number"
                   v-model="formData.phone"
-                  type="tel"
+                  v-model:country="formData.phoneCountry"
                   required
-                  class="input-field"
-                  placeholder="+1234567890"
                 />
               </div>
 
@@ -603,13 +601,11 @@
                 class="block text-sm font-medium text-gray-700 mb-1"
                 >Phone Number *</label
               >
-              <input
+              <PhoneNumberField
                 id="phone-hon"
                 v-model="formData.phone"
-                type="tel"
+                v-model:country="formData.phoneCountry"
                 required
-                class="input-field"
-                placeholder="+1234567890"
               />
             </div>
 
@@ -953,13 +949,11 @@
                 class="block text-sm font-medium text-gray-700 mb-1"
                 >Phone Number *</label
               >
-              <input
+              <PhoneNumberField
                 id="phone-reg"
                 v-model="formData.phone"
-                type="tel"
+                v-model:country="formData.phoneCountry"
                 required
-                class="input-field"
-                placeholder="+1234567890"
               />
             </div>
 
