@@ -209,11 +209,144 @@
             <span v-else>Check Status</span>
           </button>
           <NuxtLink
+            v-if="isVerified"
             to="/profile"
             class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
           >
             Edit Profile
           </NuxtLink>
+          <button
+            v-else
+            @click="openEdit"
+            class="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+          >
+            Edit Profile
+          </button>
+        </div>
+
+        <!-- Inline Edit Profile (available before verification; does not route) -->
+        <div
+          v-if="editMode"
+          class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+          @click.self="closeEdit"
+        >
+          <div
+            class="bg-white rounded-lg shadow-xl max-w-lg w-full max-h-[90vh] overflow-y-auto p-6"
+          >
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-semibold text-gray-900">
+                Edit Profile
+              </h3>
+              <button
+                type="button"
+                @click="closeEdit"
+                class="text-gray-400 hover:text-gray-600 text-xl leading-none"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div
+              v-if="editError"
+              class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded"
+            >
+              {{ editError }}
+            </div>
+            <div
+              v-if="editSuccess"
+              class="mb-4 bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded"
+            >
+              {{ editSuccess }}
+            </div>
+
+            <form @submit.prevent="saveProfile" class="space-y-4">
+              <div>
+                <label
+                  for="edit-full-name"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Full Name *</label
+                >
+                <input
+                  id="edit-full-name"
+                  v-model="editForm.full_name"
+                  type="text"
+                  required
+                  class="input-field"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="edit-phone"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Phone Number</label
+                >
+                <input
+                  id="edit-phone"
+                  v-model="editForm.phone"
+                  type="tel"
+                  class="input-field"
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+
+              <div>
+                <label
+                  for="edit-year-group"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Year Group of Completion *</label
+                >
+                <select
+                  id="edit-year-group"
+                  v-model="editForm.year_group"
+                  required
+                  class="input-field"
+                >
+                  <option :value="null">Select year...</option>
+                  <option
+                    v-for="year in yearOptions"
+                    :key="year"
+                    :value="year"
+                  >
+                    {{ year }}
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  for="edit-bio"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                  >Bio</label
+                >
+                <textarea
+                  id="edit-bio"
+                  v-model="editForm.bio"
+                  rows="3"
+                  class="input-field"
+                  placeholder="Tell us about yourself..."
+                ></textarea>
+              </div>
+
+              <div class="flex justify-end space-x-3 pt-2">
+                <button
+                  type="button"
+                  @click="closeEdit"
+                  class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  :disabled="saving"
+                  class="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <span v-if="saving">Saving...</span>
+                  <span v-else>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
 
         <div class="mt-6">
@@ -239,6 +372,30 @@ const supabase = useSupabaseClient();
 const user = useSupabaseUser();
 const profile = ref<any>(null);
 const checking = ref(false);
+
+// Inline edit state (available before verification; no routing)
+const editMode = ref(false);
+const saving = ref(false);
+const editError = ref("");
+const editSuccess = ref("");
+const editForm = ref({
+  full_name: "",
+  phone: "",
+  year_group: null as number | null,
+  bio: "",
+});
+
+const isVerified = computed(() => {
+  const verifiedStatuses = ["verified", "pending_payment", "active"];
+  return verifiedStatuses.includes(profile.value?.membership_status || "");
+});
+
+// Year options for the inline edit form (current year - 11 to +10)
+const currentYear = new Date().getFullYear();
+const yearOptions = Array.from(
+  { length: 22 },
+  (_, i) => currentYear - 11 + i,
+);
 
 const getMembershipLabel = (type: string) => {
   const labels: Record<string, string> = {
@@ -296,6 +453,56 @@ const checkStatus = async () => {
   checking.value = true;
   await fetchProfile();
   checking.value = false;
+};
+
+const openEdit = () => {
+  if (!profile.value) return;
+  editForm.value = {
+    full_name: profile.value.full_name || "",
+    phone: profile.value.phone || "",
+    year_group: profile.value.year_group ?? null,
+    bio: profile.value.bio || "",
+  };
+  editError.value = "";
+  editSuccess.value = "";
+  editMode.value = true;
+};
+
+const closeEdit = () => {
+  editMode.value = false;
+};
+
+const saveProfile = async () => {
+  if (!user.value) return;
+
+  saving.value = true;
+  editError.value = "";
+  editSuccess.value = "";
+
+  try {
+    const { error: updateError } = await supabase
+      .from("profiles")
+      .update({
+        full_name: editForm.value.full_name,
+        phone: editForm.value.phone,
+        year_group: editForm.value.year_group,
+        bio: editForm.value.bio,
+      })
+      .eq("id", user.value.id);
+
+    if (updateError) throw updateError;
+
+    // Refresh local profile so the status panel stays in sync
+    await fetchProfile();
+    editSuccess.value = "Profile updated successfully";
+    setTimeout(() => {
+      editMode.value = false;
+    }, 1200);
+  } catch (err: any) {
+    editError.value = err?.message || "Failed to update profile";
+  } finally {
+    saving.value = false;
+  }
 };
 
 const logout = async () => {

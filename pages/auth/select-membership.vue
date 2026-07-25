@@ -1192,7 +1192,7 @@
               <label
                 for="graduation-year-reg"
                 class="block text-sm font-medium text-gray-700 mb-1"
-                >Year of Graduation *</label
+                >Year of Graduation - HC *</label
               >
               <input
                 id="graduation-year-reg"
