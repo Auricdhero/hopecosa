@@ -49,6 +49,24 @@ const country = defineModel<string>("country", { default: "" });
 const countryCode = ref(country.value || props.defaultCountry);
 const localNumber = ref("");
 
+// Restore the local digits from an existing E.164 value (editing a saved profile)
+if (phone.value) {
+  const known = countries.find((c) => c.code === countryCode.value);
+  const matched =
+    known && phone.value.startsWith(known.dialCode)
+      ? known
+      : countries
+          .filter((c) => phone.value.startsWith(c.dialCode))
+          .sort((a, b) => b.dialCode.length - a.dialCode.length)[0];
+
+  if (matched) {
+    countryCode.value = matched.code;
+    localNumber.value = phone.value.slice(matched.dialCode.length);
+  } else {
+    localNumber.value = phone.value;
+  }
+}
+
 const selectedDialCode = computed(
   () => countries.find((c) => c.code === countryCode.value)?.dialCode || "",
 );
