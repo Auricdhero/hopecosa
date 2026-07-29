@@ -235,7 +235,7 @@
           >
             <div class="flex justify-between items-center mb-4">
               <h3 class="text-lg font-semibold text-gray-900">
-                Edit Profile
+                Edit {{ getMembershipLabel(profile?.membership_type) }} Details
               </h3>
               <button
                 type="button"
@@ -260,35 +260,12 @@
             </div>
 
             <form @submit.prevent="saveProfile" class="space-y-4">
-              <div>
-                <label
-                  for="edit-full-name"
-                  class="block text-sm font-medium text-gray-700 mb-1"
-                  >Full Name *</label
-                >
-                <input
-                  id="edit-full-name"
-                  v-model="editForm.full_name"
-                  type="text"
-                  required
-                  class="input-field"
-                />
-              </div>
-
-              <div>
-                <label
-                  for="edit-phone"
-                  class="block text-sm font-medium text-gray-700 mb-1"
-                  >Phone Number</label
-                >
-                <input
-                  id="edit-phone"
-                  v-model="editForm.phone"
-                  type="tel"
-                  class="input-field"
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
+              <MembershipDetailsForm
+                v-model="editForm"
+                :membership-type="profile?.membership_type"
+                @file-selected="handleEditFileUpload"
+                @file-error="editError = $event"
+              />
 
               <div>
                 <label
@@ -378,12 +355,13 @@ const editMode = ref(false);
 const saving = ref(false);
 const editError = ref("");
 const editSuccess = ref("");
-const editForm = ref({
+const editForm = ref<any>({
   full_name: "",
   phone: "",
   year_group: null as number | null,
   bio: "",
 });
+const editUploadedFiles = ref<Record<string, File>>({});
 
 const isVerified = computed(() => {
   const verifiedStatuses = ["verified", "pending_payment", "active"];
@@ -397,7 +375,8 @@ const yearOptions = Array.from(
   (_, i) => currentYear - 11 + i,
 );
 
-const getMembershipLabel = (type: string) => {
+const getMembershipLabel = (type?: string) => {
+  if (!type) return "";
   const labels: Record<string, string> = {
     associate: "Associate Member",
     honourary: "Honourary Member",
@@ -458,11 +437,13 @@ const checkStatus = async () => {
 const openEdit = () => {
   if (!profile.value) return;
   editForm.value = {
+    ...(profile.value.membership_details || {}),
     full_name: profile.value.full_name || "",
     phone: profile.value.phone || "",
     year_group: profile.value.year_group ?? null,
     bio: profile.value.bio || "",
   };
+  editUploadedFiles.value = {};
   editError.value = "";
   editSuccess.value = "";
   editMode.value = true;
@@ -470,6 +451,11 @@ const openEdit = () => {
 
 const closeEdit = () => {
   editMode.value = false;
+};
+
+const handleEditFileUpload = (fileType: string, file: File) => {
+  editUploadedFiles.value[fileType] = file;
+  editError.value = "";
 };
 
 const saveProfile = async () => {
@@ -480,13 +466,42 @@ const saveProfile = async () => {
   editSuccess.value = "";
 
   try {
+    // Upload any newly attached files
+    const fileUrls: Record<string, string> = {};
+    for (const [fileType, file] of Object.entries(editUploadedFiles.value)) {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${user.value.id}/${profile.value?.membership_type}_${fileType}_${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("uploads")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage
+        .from("uploads")
+        .getPublicUrl(fileName);
+
+      fileUrls[fileType] = urlData.publicUrl;
+    }
+
+    const { year_group, bio, ...membershipDetails } = editForm.value;
+
+    if (Object.keys(fileUrls).length > 0) {
+      membershipDetails.uploadedFiles = {
+        ...(membershipDetails.uploadedFiles || {}),
+        ...fileUrls,
+      };
+    }
+
     const { error: updateError } = await supabase
       .from("profiles")
       .update({
         full_name: editForm.value.full_name,
         phone: editForm.value.phone,
-        year_group: editForm.value.year_group,
-        bio: editForm.value.bio,
+        year_group,
+        bio,
+        membership_details: membershipDetails,
       })
       .eq("id", user.value.id);
 
@@ -495,6 +510,7 @@ const saveProfile = async () => {
     // Refresh local profile so the status panel stays in sync
     await fetchProfile();
     editSuccess.value = "Profile updated successfully";
+    editUploadedFiles.value = {};
     setTimeout(() => {
       editMode.value = false;
     }, 1200);
