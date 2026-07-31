@@ -269,29 +269,6 @@
 
               <div>
                 <label
-                  for="edit-year-group"
-                  class="block text-sm font-medium text-gray-700 mb-1"
-                  >Year Group of Completion *</label
-                >
-                <select
-                  id="edit-year-group"
-                  v-model="editForm.year_group"
-                  required
-                  class="input-field"
-                >
-                  <option :value="null">Select year...</option>
-                  <option
-                    v-for="year in yearOptions"
-                    :key="year"
-                    :value="year"
-                  >
-                    {{ year }}
-                  </option>
-                </select>
-              </div>
-
-              <div>
-                <label
                   for="edit-bio"
                   class="block text-sm font-medium text-gray-700 mb-1"
                   >Bio</label
@@ -367,13 +344,6 @@ const isVerified = computed(() => {
   const verifiedStatuses = ["verified", "pending_payment", "active"];
   return verifiedStatuses.includes(profile.value?.membership_status || "");
 });
-
-// Year options for the inline edit form (current year - 11 to +10)
-const currentYear = new Date().getFullYear();
-const yearOptions = Array.from(
-  { length: 22 },
-  (_, i) => currentYear - 11 + i,
-);
 
 const getMembershipLabel = (type?: string) => {
   if (!type) return "";

@@ -392,25 +392,33 @@ const typeFilter = ref("");
 const associateFields: Record<string, string> = {
   full_name: "Full Name (ID Card)",
   gender: "Gender",
+  maritalStatus: "Marital Status",
   dateOfBirth: "Date of Birth",
   phone: "Phone",
   email: "Email",
   residentialAddress: "Residential Address",
   city: "City",
+  suburb: "Suburb",
   country: "Country",
+  courseStudiedHC: "Course Studied - HC",
   occupation: "Occupation",
   organizationCompany: "Organization/Company",
 };
 
 const regularFields: Record<string, string> = {
+  maritalStatus: "Marital Status",
+  suburb: "Suburb",
   yearOfGraduation: "Year of Graduation",
-  programOrCourse: "Program/Course",
+  programOrCourse: "Course Studied - HC",
   leadershipRole: "Leadership Role (SRC)",
   graduationConsent: "Verification Consent",
 };
 
 const honouraryFields: Record<string, string> = {
   professionalTitle: "Professional Title",
+  maritalStatus: "Marital Status",
+  suburb: "Suburb",
+  courseStudiedHC: "Course Studied - HC",
   fieldOfExpertise: "Field of Expertise",
   currentPosition: "Current Position",
   organizationInstitution: "Organization/Institution",
