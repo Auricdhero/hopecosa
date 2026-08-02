@@ -1,10 +1,19 @@
 <template>
   <div class="p-8">
-    <div class="mb-8">
-      <h1 class="text-3xl font-bold text-gray-900">Users &amp; Verification</h1>
-      <p class="mt-2 text-gray-600">
-        View user details and verify membership applications
-      </p>
+    <div class="mb-8 flex items-start justify-between">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900">Users &amp; Verification</h1>
+        <p class="mt-2 text-gray-600">
+          View user details and verify membership applications
+        </p>
+      </div>
+      <button
+        @click="downloadCsv"
+        :disabled="filteredUsers.length === 0"
+        class="btn-secondary disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Download CSV
+      </button>
     </div>
 
     <!-- Filters -->
@@ -484,6 +493,59 @@ const formatKey = (key: string) => {
 
 const openUserDetail = (u: any) => {
   selectedUser.value = u;
+};
+
+const csvColumns: { key: string; header: string }[] = [
+  { key: "full_name", header: "Full Name" },
+  { key: "email", header: "Email" },
+  { key: "phone", header: "Phone" },
+  { key: "year_group", header: "Year Group" },
+  { key: "major", header: "Major" },
+  { key: "bio", header: "Bio" },
+  { key: "membership_type", header: "Membership Type" },
+  { key: "membership_status", header: "Membership Status" },
+  { key: "membership_selected_at", header: "Membership Selected At" },
+  { key: "biodata_completed", header: "Biodata Completed" },
+  { key: "biodata_completed_at", header: "Biodata Completed At" },
+  { key: "payment_status", header: "Payment Status" },
+  { key: "payment_amount", header: "Payment Amount" },
+  { key: "payment_date", header: "Payment Date" },
+  { key: "stripe_payment_intent_id", header: "Stripe Payment Intent ID" },
+  { key: "is_admin", header: "Is Admin" },
+  { key: "verified_at", header: "Verified At" },
+  { key: "created_at", header: "Registered At" },
+  { key: "updated_at", header: "Updated At" },
+  { key: "membership_details", header: "Membership Form Details" },
+];
+
+const csvEscape = (value: any) => {
+  if (value === null || value === undefined) return "";
+  const str =
+    typeof value === "object" ? JSON.stringify(value) : String(value);
+  if (/[",\n\r]/.test(str)) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+};
+
+const downloadCsv = () => {
+  const rows = filteredUsers.value.map((u: Record<string, any>) =>
+    csvColumns.map((col) => csvEscape(u[col.key])).join(","),
+  );
+  const csvContent = [
+    csvColumns.map((col) => csvEscape(col.header)).join(","),
+    ...rows,
+  ].join("\r\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `members-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };
 
 const verifyUser = async (u: any) => {
