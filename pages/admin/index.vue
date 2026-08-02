@@ -31,7 +31,7 @@
       <div class="card">
         <p class="text-sm text-gray-600">Total Payments</p>
         <p class="text-3xl font-bold text-blue-600">
-          ${{ stats.totalPayments.toFixed(2) }}
+          GHS{{ stats.totalPayments.toFixed(2) }}
         </p>
       </div>
     </div>
