@@ -77,6 +77,26 @@
             :max="new Date().toISOString().split('T')[0]"
           />
         </div>
+
+        <div>
+          <label
+            for="associate-marital-status"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Marital Status *</label
+          >
+          <select
+            id="associate-marital-status"
+            v-model="formData.maritalStatus"
+            required
+            class="input-field"
+          >
+            <option value="" disabled>Select marital status</option>
+            <option value="single">Single</option>
+            <option value="married">Married</option>
+            <option value="widowed">Widowed</option>
+            <option value="divorced">Divorced</option>
+          </select>
+        </div>
       </div>
 
       <div>
@@ -262,6 +282,24 @@
 
         <div>
           <label
+            for="associate-suburb"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Suburb *</label
+          >
+          <input
+            id="associate-suburb"
+            v-model="formData.suburb"
+            type="text"
+            required
+            class="input-field"
+            placeholder="Suburb"
+          />
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label
             for="associate-tertiary-status"
             class="block text-sm font-medium text-gray-700 mb-1"
             >Tertiary Status *</label
@@ -329,6 +367,21 @@
           required
           class="input-field"
           placeholder="e.g., BSc Information Technology"
+        />
+      </div>
+
+      <div>
+        <label
+          for="associate-course-studied-hc"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Course Studied - HC</label
+        >
+        <input
+          id="associate-course-studied-hc"
+          v-model="formData.courseStudiedHC"
+          type="text"
+          class="input-field"
+          placeholder="e.g., Bachelor of Science in Computer Science"
         />
       </div>
 
@@ -441,22 +494,44 @@
         </div>
       </div>
 
-      <div>
-        <label
-          for="honorary-gender"
-          class="block text-sm font-medium text-gray-700 mb-1"
-          >Gender *</label
-        >
-        <select
-          id="honorary-gender"
-          v-model="formData.gender"
-          required
-          class="input-field"
-        >
-          <option value="" disabled>Select gender</option>
-          <option value="male">Male</option>
-          <option value="female">Female</option>
-        </select>
+      <div class="grid md:grid-cols-2 gap-4">
+        <div>
+          <label
+            for="honorary-gender"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Gender *</label
+          >
+          <select
+            id="honorary-gender"
+            v-model="formData.gender"
+            required
+            class="input-field"
+          >
+            <option value="" disabled>Select gender</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+        </div>
+
+        <div>
+          <label
+            for="honorary-marital-status"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Marital Status *</label
+          >
+          <select
+            id="honorary-marital-status"
+            v-model="formData.maritalStatus"
+            required
+            class="input-field"
+          >
+            <option value="" disabled>Select marital status</option>
+            <option value="single">Single</option>
+            <option value="married">Married</option>
+            <option value="widowed">Widowed</option>
+            <option value="divorced">Divorced</option>
+          </select>
+        </div>
       </div>
 
       <div>
@@ -664,6 +739,21 @@
 
       <div>
         <label
+          for="honorary-course-studied-hc"
+          class="block text-sm font-medium text-gray-700 mb-1"
+          >Course Studied - HC</label
+        >
+        <input
+          id="honorary-course-studied-hc"
+          v-model="formData.courseStudiedHC"
+          type="text"
+          class="input-field"
+          placeholder="e.g., Bachelor of Science in Computer Science"
+        />
+      </div>
+
+      <div>
+        <label
           for="field-expertise"
           class="block text-sm font-medium text-gray-700 mb-1"
           >Field of Expertise *</label
@@ -846,6 +936,26 @@
             class="input-field"
             placeholder="Nationality"
           />
+        </div>
+
+        <div>
+          <label
+            for="regular-marital-status"
+            class="block text-sm font-medium text-gray-700 mb-1"
+            >Marital Status *</label
+          >
+          <select
+            id="regular-marital-status"
+            v-model="formData.maritalStatus"
+            required
+            class="input-field"
+          >
+            <option value="" disabled>Select marital status</option>
+            <option value="single">Single</option>
+            <option value="married">Married</option>
+            <option value="widowed">Widowed</option>
+            <option value="divorced">Divorced</option>
+          </select>
         </div>
       </div>
 
@@ -1064,7 +1174,7 @@
         <label
           for="program-course"
           class="block text-sm font-medium text-gray-700 mb-1"
-          >Program / Course Studied *</label
+          >Course Studied - HC *</label
         >
         <input
           id="program-course"

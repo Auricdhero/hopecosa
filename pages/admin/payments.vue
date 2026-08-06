@@ -12,7 +12,7 @@
       <div class="card">
         <p class="text-sm text-gray-600">Total Revenue</p>
         <p class="text-3xl font-bold text-green-600">
-          ${{ totalRevenue.toFixed(2) }}
+          GHS{{ totalRevenue.toFixed(2) }}
         </p>
       </div>
       <div class="card">

@@ -116,6 +116,15 @@
                 }}</span>
               </div>
               <div
+                v-if="membershipInfo.details.maritalStatus"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Marital Status</span>
+                <span class="text-gray-900 font-medium capitalize">{{
+                  membershipInfo.details.maritalStatus
+                }}</span>
+              </div>
+              <div
                 v-if="membershipInfo.details.dateOfBirth"
                 class="flex flex-col"
               >
@@ -156,6 +165,24 @@
                   >{{ membershipInfo.details.city }},
                   {{ membershipInfo.details.country }}</span
                 >
+              </div>
+              <div
+                v-if="membershipInfo.details.suburb"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Suburb</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.suburb
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.courseStudiedHC"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Course Studied - HC</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.courseStudiedHC
+                }}</span>
               </div>
               <div
                 v-if="membershipInfo.details.previousAffiliation"
@@ -282,6 +309,15 @@
                 }}</span>
               </div>
               <div
+                v-if="membershipInfo.details.maritalStatus"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Marital Status</span>
+                <span class="text-gray-900 font-medium capitalize">{{
+                  membershipInfo.details.maritalStatus
+                }}</span>
+              </div>
+              <div
                 v-if="membershipInfo.details.nationality"
                 class="flex flex-col"
               >
@@ -396,7 +432,7 @@
                 v-if="membershipInfo.details.programOrCourse"
                 class="flex flex-col"
               >
-                <span class="text-gray-600">Program/Course Studied</span>
+                <span class="text-gray-600">Course Studied - HC</span>
                 <span class="text-gray-900 font-medium">{{
                   membershipInfo.details.programOrCourse
                 }}</span>
@@ -436,6 +472,24 @@
                 <span class="text-gray-600">Gender</span>
                 <span class="text-gray-900 font-medium capitalize">{{
                   membershipInfo.details.gender
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.maritalStatus"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Marital Status</span>
+                <span class="text-gray-900 font-medium capitalize">{{
+                  membershipInfo.details.maritalStatus
+                }}</span>
+              </div>
+              <div
+                v-if="membershipInfo.details.courseStudiedHC"
+                class="flex flex-col"
+              >
+                <span class="text-gray-600">Course Studied - HC</span>
+                <span class="text-gray-900 font-medium">{{
+                  membershipInfo.details.courseStudiedHC
                 }}</span>
               </div>
               <div
